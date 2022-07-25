@@ -7,13 +7,13 @@ const Register = () => {
 
     var scramble = "MasjidAl-Muhajirin"
 
-    var username = scramble + "admin" + scramble;
+    var username = scramble + "user" + scramble;
     console.log("Username: ", username);
 
     console.log(sha256.hex(username))
 
 
-    var password = scramble + "admin123" + scramble;
+    var password = scramble + "user123" + scramble;
     console.log("Password: ", password);
 
     console.log(sha256.hex(password))

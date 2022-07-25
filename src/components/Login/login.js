@@ -1,11 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 const Swal = require('sweetalert2')
 
 var sha256 = require('js-sha256').sha256;
-
-
-let accountData;
+var axios = require('axios');
 
 const Login = () => {
 
@@ -15,63 +13,56 @@ const Login = () => {
 
     var scramble = "MasjidAl-Muhajirin";
 
-
-
-    useEffect(() => {
-
-        getData();
-
-    }, []);
-
-    const getData = async () => {
-        fetch('./data/account/account.json', {
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            }
-        })
-            .then(function (response) {
-                return response.json();
-            })
-            .then(function (myJson) {
-
-                accountData = myJson;
-
-            });
-    }
-
     const onSubmitForm = async (e) => {
         e.preventDefault(); //prevent refresh
 
-        var hexUser = sha256(scramble + username + scramble);
-        var hexPassword = sha256(scramble + password + scramble);
-        console.log(accountData.length)
+        if (username === "" || password === "") {
 
-        for (let i = 0; i < accountData.length; i++) {
-            if (accountData[i].username === hexUser && accountData[i].password === hexPassword) {
+            Swal.fire({
+                position: 'top',
+                icon: 'info',
+                title: 'Username atau Password tidak dapat kosong',
+                showConfirmButton: false,
+                timer: 1500
+            });
 
-                Swal.fire({
-                    position: 'top',
-                    icon: 'success',
-                    title: 'Login Berhasil',
-                    showConfirmButton: false,
-                    timer: 1500
+        } else {
+            axios
+                .post("http://localhost:4000/login", {
+                    username: username,
+                })
+                .then(function (response) {
+
+                    var hexPassword = sha256(scramble + password + scramble);
+
+                    if (response.data.username === username && response.data.password === hexPassword) {
+
+                        Swal.fire({
+                            position: 'center',
+                            icon: 'success',
+                            title: 'Login Berhasil',
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+                        nav("/home");
+                        return;
+
+                    } else {
+
+                        Swal.fire({
+                            position: 'top',
+                            icon: 'error',
+                            title: 'Username atau Password Salah',
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+
+                    }
+                })
+                .catch(function (error) {
+                    console.error(error);
                 });
-                nav("/home");
-                return;
-
-            }
         }
-        Swal.fire({
-            position: 'top',
-            icon: 'error',
-            title: 'Username atau Password Salah',
-            showConfirmButton: false,
-            timer: 1500
-        })
-
-        console.log("login failed");
-
     };
 
     return (
