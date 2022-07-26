@@ -5,7 +5,8 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import InputLabel from '@mui/material/InputLabel';
 import InputAdornment from '@mui/material/InputAdornment';
 import FormControl from '@mui/material/FormControl';
-import Box from '@mui/material/Box';
+
+const Swal = require('sweetalert2')
 
 export default function InsertData() {
 
@@ -38,6 +39,49 @@ export default function InsertData() {
     const onSubmitForm = (e) => {
 
         e.preventDefault();
+        if(tanggalValue === "" || ketValue === "") {
+
+            Swal.fire({
+                position: 'center',
+                icon: 'error',
+                title: 'Tanggal atau Keterangan tidak dapat kosong',
+                showConfirmButton: false,
+                timer: 1500
+            });
+
+            return;
+        }
+        if(refState) {
+            if(pemasukanValue === "") {
+
+                Swal.fire({
+                    position: 'center',
+                    icon: 'error',
+                    title: 'Jumlah Pemasukan tidak dapat kosong',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+
+                return;
+
+            }
+        } else {
+
+            if(pengeluaranValue === "") {
+
+                Swal.fire({
+                    position: 'center',
+                    icon: 'error',
+                    title: 'Jumlah Pengeluaran tidak dapat kosong',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+
+                return;
+
+            }
+        }
+
         console.log(tanggalValue);
         console.log(refValue.label);
         console.log(ketValue)
@@ -75,13 +119,14 @@ export default function InsertData() {
                         label="Keterangan"
                         multiline
                         maxRows={5}
+                        sx={{ width: 300 }}
                         value={ketValue}
                         onChange={e => setKetValue(e.target.value)}
                     />
 
 
                     {refState ?
-                        <FormControl>
+                        <FormControl sx={{ width: 220 }}>
                             <InputLabel htmlFor="outlined-adornment-amount">Pemasukan</InputLabel>
                             <OutlinedInput
                                 id="outlined-adornment-amount"
@@ -110,7 +155,7 @@ export default function InsertData() {
                         className="no-underline text-white rounded-lg font-semibold  active:bg-gray-500 bg-black py-2 px-4 transition duration-75 ease-in-ou"
                         type="submit"
                     >
-                        masuk
+                        Submit
                     </button>
                 </div>
             </form>
