@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import Sidebar from "../components/Sidebar/sidebar";
+import Sidebar from "../components/Menus/sidebar";
 
 const PageLogin = () => {
 

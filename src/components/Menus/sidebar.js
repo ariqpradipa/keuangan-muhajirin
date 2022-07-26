@@ -22,7 +22,7 @@ import SvgIcon from '@mui/material/SvgIcon';
 
 import { useNavigate } from "react-router-dom";
 
-import Home from "../Home/home";
+import Tabs from "./tabs";
 import InsertData from '../InsertData/insertData';
 
 const drawerWidth = 240;
@@ -172,7 +172,7 @@ export default function MiniDrawer() {
                 <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
                     <DrawerHeader />
                     <div id="headDraw" className="flex center">
-                        {homeState ? <Home /> : <InsertData />}
+                        {homeState ? <Tabs /> : <InsertData />}
                     </div>
                 </Box>
             </Box>
