@@ -5,6 +5,8 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import InputLabel from '@mui/material/InputLabel';
 import InputAdornment from '@mui/material/InputAdornment';
 import FormControl from '@mui/material/FormControl';
+import axios from "axios";
+import { setRef } from '@mui/material';
 
 const Swal = require('sweetalert2')
 
@@ -14,8 +16,7 @@ export default function InsertData() {
     const [refValue, setRefValue] = React.useState(referensi[0]);
     const [refInput, setRefInput] = React.useState("");
     const [ketValue, setKetValue] = React.useState("");
-    const [pemasukanValue, setPemasukanValue] = React.useState("");
-    const [pengeluaranValue, setPengeluaranValue] = React.useState("");
+    const [nominalValue, setNominalValue] = React.useState("");
 
     const [refState, setRefState] = React.useState(true);
 
@@ -25,12 +26,10 @@ export default function InsertData() {
 
         if (newRef[0] === 'A') {
 
-            setPengeluaranValue("");
             setRefState(true);
 
         } else if (newRef[0] === 'B') {
 
-            setPemasukanValue("")
             setRefState(false);
         }
 
@@ -39,7 +38,7 @@ export default function InsertData() {
     const onSubmitForm = (e) => {
 
         e.preventDefault();
-        if(tanggalValue === "" || ketValue === "") {
+        if (tanggalValue === "" || ketValue === "") {
 
             Swal.fire({
                 position: 'center',
@@ -51,114 +50,143 @@ export default function InsertData() {
 
             return;
         }
-        if(refState) {
-            if(pemasukanValue === "") {
 
-                Swal.fire({
-                    position: 'center',
-                    icon: 'error',
-                    title: 'Jumlah Pemasukan tidak dapat kosong',
-                    showConfirmButton: false,
-                    timer: 1500
-                });
+        if (nominalValue === "") {
 
-                return;
+            Swal.fire({
+                position: 'center',
+                icon: 'error',
+                title: 'Jumlah Nominal tidak dapat kosong',
+                showConfirmButton: false,
+                timer: 1500
+            });
 
-            }
-        } else {
+            return;
 
-            if(pengeluaranValue === "") {
-
-                Swal.fire({
-                    position: 'center',
-                    icon: 'error',
-                    title: 'Jumlah Pengeluaran tidak dapat kosong',
-                    showConfirmButton: false,
-                    timer: 1500
-                });
-
-                return;
-
-            }
         }
 
-        console.log(tanggalValue);
-        console.log(refValue.label);
-        console.log(ketValue)
-        console.log(pemasukanValue);
-        console.log(pengeluaranValue);
+        axios
+            .post(
+                "http://localhost:4000/danaInput",
+                {
+                    tanggal: tanggalValue,
+                    referensi: refValue.label,
+                    keterangan: ketValue,
+                    nominal: nominalValue
+
+                })
+            .then(function (response) {
+
+                Swal.fire({
+                    position: 'center',
+                    icon: 'success',
+                    title: 'Data berhasil ditambahkan',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+
+                setTanggalValue("");
+                setRefValue("");
+                setKetValue("");
+                setNominalValue("");
+                console.log(response.data);
 
 
+            })
+            .catch(function (error) {
+
+                Swal.fire({
+                    position: 'center',
+                    icon: 'error',
+                    title: 'Gagal memasukkan data',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+
+                console.error(error);
+            });
     }
+
+
 
     return (
         <>
-            <form onSubmit={onSubmitForm}>
-                <div className="flex gap-2">
-                    <TextField
-                        id="outlined-basic"
-                        label="Tanggal"
-                        variant="outlined"
-                        value={tanggalValue}
-                        onChange={e => setTanggalValue(e.target.value)}
-                    />
-                    <Autocomplete
-                        disablePortal
-                        value={refValue}
-                        onChange={(e, newVal) => setRefValue(newVal)}
-                        inputValue={refInput}
-                        onInputChange={(e, newInputVal) => refHandle(newInputVal)}
-                        id="combo-box-demo"
-                        options={referensi}
-                        sx={{ width: 132 }}
-                        renderInput={(params) => <TextField {...params} label="Referensi" />}
-
-                    />
-                    <TextField
-                        id="outlined-multiline-flexible"
-                        label="Keterangan"
-                        multiline
-                        maxRows={5}
-                        sx={{ width: 300 }}
-                        value={ketValue}
-                        onChange={e => setKetValue(e.target.value)}
-                    />
-
-
-                    {refState ?
-                        <FormControl sx={{ width: 220 }}>
-                            <InputLabel htmlFor="outlined-adornment-amount">Pemasukan</InputLabel>
-                            <OutlinedInput
-                                id="outlined-adornment-amount"
-                                type="number"
-                                startAdornment={<InputAdornment position="start">Rp</InputAdornment>}
-                                label="Pemasukan"
-                                value={pemasukanValue}
-                                onChange={e => setPemasukanValue(e.target.value)}
-                            />
-                        </FormControl> :
-                        <FormControl>
-                            <InputLabel htmlFor="outlined-adornment-amount">Pemasukan</InputLabel>
-                            <OutlinedInput
-                                id="outlined-adornment-amount"
-                                type="number"
-                                startAdornment={<InputAdornment position="start">Rp</InputAdornment>}
-                                label="Pengeluaran"
-                                value={pengeluaranValue}
-                                onChange={e => setPengeluaranValue(e.target.value)}
-                            />
-                        </FormControl>
-                    }
-
-                    <button
-                        key="SignIn"
-                        className="no-underline text-white rounded-lg font-semibold  active:bg-gray-500 bg-black py-2 px-4 transition duration-75 ease-in-ou"
-                        type="submit"
-                    >
-                        Submit
-                    </button>
+            <div>
+                <div className="flex flex-col">
+                    <h1 className="font-sans font-bold text-left text-2xl pb-5">
+                        Pemasukan Data
+                    </h1>
                 </div>
-            </form>
+                <form onSubmit={onSubmitForm}>
+                    <div className="flex gap-2">
+                        <TextField
+                            id="outlined-basic"
+                            label="Tanggal"
+                            InputLabelProps={{
+                                shrink: true,
+                            }}
+                            type="date"
+                            value={tanggalValue}
+                            onChange={e => setTanggalValue(e.target.value)}
+                        />
+                        <Autocomplete
+                            disablePortal
+                            value={refValue}
+                            onChange={(e, newVal) => setRefValue(newVal)}
+                            inputValue={refInput}
+                            onInputChange={(e, newInputVal) => refHandle(newInputVal)}
+                            id="combo-box-demo"
+                            options={referensi}
+                            sx={{ width: 132 }}
+                            renderInput={(params) => <TextField {...params} label="Referensi" />}
+
+                        />
+                        <TextField
+                            id="outlined-multiline-flexible"
+                            label="Keterangan"
+                            multiline
+                            maxRows={5}
+                            sx={{ width: 300 }}
+                            value={ketValue}
+                            onChange={e => setKetValue(e.target.value)}
+                        />
+
+
+                        {refState ?
+                            <FormControl sx={{ width: 220 }}>
+                                <InputLabel htmlFor="outlined-adornment-amount">Pemasukan</InputLabel>
+                                <OutlinedInput
+                                    id="outlined-adornment-amount"
+                                    type="number"
+                                    startAdornment={<InputAdornment position="start">Rp</InputAdornment>}
+                                    label="Pemasukan"
+                                    value={nominalValue}
+                                    onChange={e => setNominalValue(e.target.value)}
+                                />
+                            </FormControl> :
+                            <FormControl sx={{ width: 220 }}>
+                                <InputLabel htmlFor="outlined-adornment-amount">Pengeluaran</InputLabel>
+                                <OutlinedInput
+                                    id="outlined-adornment-amount"
+                                    type="number"
+                                    startAdornment={<InputAdornment position="start">Rp</InputAdornment>}
+                                    label="Pengeluaran"
+                                    value={nominalValue}
+                                    onChange={e => setNominalValue(e.target.value)}
+                                />
+                            </FormControl>
+                        }
+
+                        <button
+                            key="SignIn"
+                            className="no-underline text-white rounded-lg font-semibold  active:bg-gray-500 bg-black py-2 px-4 transition duration-75 ease-in-ou"
+                            type="submit"
+                        >
+                            Submit
+                        </button>
+                    </div>
+                </form>
+            </div>
         </>
     );
 }
