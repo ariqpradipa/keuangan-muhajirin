@@ -23,6 +23,7 @@ import SvgIcon from '@mui/material/SvgIcon';
 import { useNavigate } from "react-router-dom";
 
 import Home from "../Home/home";
+import InsertData from '../InsertData/insertData';
 
 const drawerWidth = 240;
 
@@ -102,7 +103,7 @@ function HomeIcon(props) {
 export default function MiniDrawer() {
     const theme = useTheme();
     const [open, setOpen] = React.useState(false);
-    const nav = useNavigate();
+    const [homeState, setHomeState] = React.useState(true);
 
     const handleDrawerOpen = () => {
         setOpen(true);
@@ -143,7 +144,7 @@ export default function MiniDrawer() {
                     </DrawerHeader>
                     <Divider />
                     <List>
-                        {['Home', 'Input', 'Edit'].map((text, index) => (
+                        {['Home', 'Input'].map((text, index) => (
                             <ListItem key={text} disablePadding sx={{ display: 'block' }}>
                                 <ListItemButton
                                     sx={{
@@ -159,7 +160,7 @@ export default function MiniDrawer() {
                                             justifyContent: 'center',
                                         }}
                                     >
-                                        {index % 2 === 0 ? <HomeIcon /> : <InboxIcon  onClick={() => nav("/insertData")}/>}
+                                        {index % 2 === 0 ? <HomeIcon onClick={() => setHomeState(true)}/> : <InboxIcon  onClick={() => setHomeState(false)}/>}
                                     </ListItemIcon>
                                     <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
                                 </ListItemButton>
@@ -171,7 +172,7 @@ export default function MiniDrawer() {
                 <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
                     <DrawerHeader />
                     <div id="headDraw" className="flex center">
-                        <Home />
+                        {homeState ? <Home /> : <InsertData />}
                     </div>
                 </Box>
             </Box>
