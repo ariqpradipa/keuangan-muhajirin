@@ -6,6 +6,7 @@ import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 
 import Home from "../Home/home";
+import RefTable from "../Home/refTable";
 
 export default function LabTabs() {
     const [value, setValue] = React.useState('1');
@@ -25,7 +26,7 @@ export default function LabTabs() {
                     </TabList>
                 </Box>
                 <TabPanel value="1"> <Home /> </TabPanel>
-                <TabPanel value="2">Item Two</TabPanel>
+                <TabPanel value="2"> <RefTable /> </TabPanel>
                 <TabPanel value="3">Item Three</TabPanel>
             </TabContext>
         </Box>

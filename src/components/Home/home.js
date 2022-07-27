@@ -257,7 +257,7 @@ export default function EnhancedTable() {
 
                 });
 
-            } else{
+            } else {
 
                 rows.push({
 
