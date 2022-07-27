@@ -20,9 +20,12 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
+import TextField from '@mui/material/TextField';
 import { visuallyHidden } from '@mui/utils';
 
 import axios from "axios";
+
+const Swal = require('sweetalert2')
 
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -211,6 +214,8 @@ export default function EnhancedTable() {
     const [page, setPage] = React.useState(0);
     const [dense, setDense] = React.useState(false);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
+    const [tanggalDari, setTanggalDari] = React.useState('');
+    const [tanggalSampai, setTanggalSampai] = React.useState('');
 
     const [hasData, setHasData] = React.useState(false);
     const [hasilData, setHasilData] = React.useState(null);
@@ -250,7 +255,7 @@ export default function EnhancedTable() {
     if (hasData) {
         var nomor = 0;
         for (let i = 0; i < hasilData.length; i++) {
-            
+
             nomor += 1;
             console.log(hasilData[i].referensi[0])
 
@@ -338,94 +343,152 @@ export default function EnhancedTable() {
     const emptyRows =
         page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
-    return (
-        <Box sx={{ width: '100%' }}>
-            <Paper sx={{ width: '100%', mb: 2 }}>
-                <EnhancedTableToolbar numSelected={selected.length} />
-                <TableContainer>
-                    <Table
-                        sx={{ minWidth: 750 }}
-                        aria-labelledby="tableTitle"
-                        size={dense ? 'small' : 'medium'}
-                    >
-                        <EnhancedTableHead
-                            numSelected={selected.length}
-                            order={order}
-                            orderBy={orderBy}
-                            onSelectAllClick={handleSelectAllClick}
-                            onRequestSort={handleRequestSort}
-                            rowCount={rows.length}
-                        />
-                        <TableBody>
-                            {/* if you don't need to support IE11, you can replace the `stableSort` call with:
-                 rows.slice().sort(getComparator(order, orderBy)) */}
-                            {stableSort(rows, getComparator(order, orderBy))
-                                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                .map((row, index) => {
-                                    const isItemSelected = isSelected(row.noId);
-                                    const labelId = `enhanced-table-checkbox-${index}`;
+    const onDateFilter = (e) => {
+        e.preventDefault();
+        if (tanggalDari === '' || tanggalSampai === '') {
 
-                                    return (
-                                        <TableRow
-                                            hover
-                                            onClick={(event) => handleClick(event, row.noId)}
-                                            role="checkbox"
-                                            aria-checked={isItemSelected}
-                                            tabIndex={-1}
-                                            key={row.noId}
-                                            selected={isItemSelected}
-                                        >
-                                            <TableCell padding="checkbox">
-                                                <Checkbox
-                                                    color="primary"
-                                                    checked={isItemSelected}
-                                                    inputProps={{
-                                                        'aria-labelledby': labelId,
-                                                    }}
-                                                />
-                                            </TableCell>
-                                            <TableCell
-                                                component="th"
-                                                id={labelId}
-                                                scope="row"
-                                                padding="none"
+            Swal.fire({
+                position: 'center',
+                icon: 'error',
+                title: 'Jarak tanggal tidak boleh kosong',
+                showConfirmButton: false,
+                timer: 1500
+            });
+
+        }
+        console.log(tanggalDari);
+        console.log(tanggalSampai);
+    }
+
+    return (
+        <>
+            <form onSubmit={onDateFilter}>
+                <div className="flex flex-row pb-5">
+                    <div className="space-x-8">
+                        <TextField
+                            label="Dari"
+                            type="date"
+                            id="outlined-size-small"
+                            value={tanggalDari}
+                            size="small"
+                            InputLabelProps={{
+                                shrink: true,
+                            }}
+                            onChange={e => setTanggalDari(e.target.value)}
+                        />
+                        <TextField
+                            label="Sampai"
+                            type="date"
+                            id="outlined-size-small"
+                            value={tanggalSampai}
+                            size="small"
+                            InputLabelProps={{
+                                shrink: true,
+                            }}
+                            onChange={e => setTanggalSampai(e.target.value)}
+                        />
+                    </div>
+                    <div className="pl-5 space-x-4">
+                        <button
+                            key="terapkan"
+                            className="no-underline text-white rounded-lg font-semibold  active:bg-gray-500 bg-black py-2 px-4 transition duration-75 ease-in-out"
+                            type="submit"
+                        >
+                            Terapkan
+                        </button>
+
+                    </div>
+                </div>
+            </form>
+
+            <Box sx={{ width: '100%' }}>
+                <Paper sx={{ width: '100%', mb: 2 }}>
+                    <EnhancedTableToolbar numSelected={selected.length} />
+                    <TableContainer>
+                        <Table
+                            sx={{ minWidth: 750 }}
+                            aria-labelledby="tableTitle"
+                            size={dense ? 'small' : 'medium'}
+                        >
+                            <EnhancedTableHead
+                                numSelected={selected.length}
+                                order={order}
+                                orderBy={orderBy}
+                                onSelectAllClick={handleSelectAllClick}
+                                onRequestSort={handleRequestSort}
+                                rowCount={rows.length}
+                            />
+                            <TableBody>
+                                {/* if you don't need to support IE11, you can replace the `stableSort` call with:
+                 rows.slice().sort(getComparator(order, orderBy)) */}
+                                {stableSort(rows, getComparator(order, orderBy))
+                                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                    .map((row, index) => {
+                                        const isItemSelected = isSelected(row.noId);
+                                        const labelId = `enhanced-table-checkbox-${index}`;
+
+                                        return (
+                                            <TableRow
+                                                hover
+                                                onClick={(event) => handleClick(event, row.noId)}
+                                                role="checkbox"
+                                                aria-checked={isItemSelected}
+                                                tabIndex={-1}
+                                                key={row.noId}
+                                                selected={isItemSelected}
                                             >
-                                                {row.noId}
-                                            </TableCell>
-                                            <TableCell align="left">{row.tanggalId}</TableCell>
-                                            <TableCell align="left">{row.referensiId}</TableCell>
-                                            <TableCell align="left">{row.keteranganId}</TableCell>
-                                            <TableCell align="right">{row.pemasukanId}</TableCell>
-                                            <TableCell align="right">{row.pengeluaranId}</TableCell>
-                                        </TableRow>
-                                    );
-                                })}
-                            {emptyRows > 0 && (
-                                <TableRow
-                                    style={{
-                                        height: (dense ? 33 : 53) * emptyRows,
-                                    }}
-                                >
-                                    <TableCell colSpan={6} />
-                                </TableRow>
-                            )}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-                <TablePagination
-                    rowsPerPageOptions={[5, 10, 25]}
-                    component="div"
-                    count={rows.length}
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    onPageChange={handleChangePage}
-                    onRowsPerPageChange={handleChangeRowsPerPage}
+                                                <TableCell padding="checkbox">
+                                                    <Checkbox
+                                                        color="primary"
+                                                        checked={isItemSelected}
+                                                        inputProps={{
+                                                            'aria-labelledby': labelId,
+                                                        }}
+                                                    />
+                                                </TableCell>
+                                                <TableCell
+                                                    component="th"
+                                                    id={labelId}
+                                                    scope="row"
+                                                    padding="none"
+                                                >
+                                                    {row.noId}
+                                                </TableCell>
+                                                <TableCell align="left">{row.tanggalId}</TableCell>
+                                                <TableCell align="left">{row.referensiId}</TableCell>
+                                                <TableCell align="left">{row.keteranganId}</TableCell>
+                                                <TableCell align="right">{row.pemasukanId}</TableCell>
+                                                <TableCell align="right">{row.pengeluaranId}</TableCell>
+                                            </TableRow>
+                                        );
+                                    })}
+                                {emptyRows > 0 && (
+                                    <TableRow
+                                        style={{
+                                            height: (dense ? 33 : 53) * emptyRows,
+                                        }}
+                                    >
+                                        <TableCell colSpan={6} />
+                                    </TableRow>
+                                )}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                    <TablePagination
+                        rowsPerPageOptions={[5, 10, 25]}
+                        component="div"
+                        count={rows.length}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                    />
+                </Paper>
+                <FormControlLabel
+                    control={<Switch checked={dense} onChange={handleChangeDense} />}
+                    label="Dense padding"
                 />
-            </Paper>
-            <FormControlLabel
-                control={<Switch checked={dense} onChange={handleChangeDense} />}
-                label="Dense padding"
-            />
-        </Box>
+            </Box>
+        </>
     );
 }
