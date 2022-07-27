@@ -86,9 +86,10 @@ export default function DenseTable() {
     }, []);
 
     //var A1, A21, A23, A24, A25, A26, A27, A28, A29, A210, A31, A32, A33, A41, A51;
-    var B1, B2, B3, B4, B5, B6, B7, B8, B9, B10;
+    //var B1, B2, B3, B4, B5, B6, B7, B8, B9, B10;
 
     var A = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    var B = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
     const getDataReferensi = async () => {
         axios
@@ -147,6 +148,7 @@ export default function DenseTable() {
     }
 
     var rowsPendapatan = [];
+    var rowsPengeluaran = [];
 
     if (hasData) {
         for (let i = 0; i < hasilData.length; i++) {
@@ -181,25 +183,25 @@ export default function DenseTable() {
             } else if (hasilData[i].referensi === 'A.5.1') {
                 A[14] += parseInt(hasilData[i].nominal, 10);
             } else if (hasilData[i].referensi === 'B.1') {
-                B1 += hasilData[i].nominal;
+                B[0] += parseInt(hasilData[i].nominal, 10);
             } else if (hasilData[i].referensi === 'B.2') {
-                B2 += hasilData[i].nominal;
+                B[1] += parseInt(hasilData[i].nominal, 10);
             } else if (hasilData[i].referensi === 'B.3') {
-                B3 += hasilData[i].nominal;
+                B[2] += parseInt(hasilData[i].nominal, 10);
             } else if (hasilData[i].referensi === 'B.4') {
-                B4 += hasilData[i].nominal;
+                B[3] += parseInt(hasilData[i].nominal, 10);
             } else if (hasilData[i].referensi === 'B.5') {
-                B5 += hasilData[i].nominal;
+                B[4] += parseInt(hasilData[i].nominal, 10);
             } else if (hasilData[i].referensi === 'B.6') {
-                B6 += hasilData[i].nominal;
+                B[5] += parseInt(hasilData[i].nominal, 10);
             } else if (hasilData[i].referensi === 'B.7') {
-                B7 += hasilData[i].nominal;
+                B[6] += parseInt(hasilData[i].nominal, 10);
             } else if (hasilData[i].referensi === 'B.8') {
-                B8 += hasilData[i].nominal;
+                B[7] += parseInt(hasilData[i].nominal, 10);
             } else if (hasilData[i].referensi === 'B.9') {
-                B9 += hasilData[i].nominal;
+                B[8] += parseInt(hasilData[i].nominal, 10);
             } else if (hasilData[i].referensi === 'B.10') {
-                B10 += hasilData[i].nominal;
+                B[9] += parseInt(hasilData[i].nominal, 10);
             }
         }
     }
@@ -210,16 +212,17 @@ export default function DenseTable() {
                 rowsPendapatan.push(createData(
                     hasilDataRef[i].referensi,
                     hasilDataRef[i].deskripsi,
-                    A[i]
+                    new Intl.NumberFormat('id-ID', {style: 'currency', currency: 'IDR'}).format(A[i])
+                ));
+            } else {
+                rowsPengeluaran.push(createData(
+                    hasilDataRef[i].referensi,
+                    hasilDataRef[i].deskripsi,
+                    new Intl.NumberFormat('id-ID', {style: 'currency', currency: 'IDR'}).format(B[i - 16])
                 ));
             }
         }
     }
-
-
-    const rowsPengeluaran = [
-        createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-    ]
 
     return (
         <>
@@ -230,7 +233,7 @@ export default function DenseTable() {
 
                         <TableHead>
                             <TableRow>
-                                <TableCell>REFERENSI</TableCell>
+                                <TableCell align="center">REFERENSI</TableCell>
                                 <TableCell align="left">KETERANGAN</TableCell>
                                 <TableCell align="right">NOMINAL</TableCell>
                             </TableRow>
@@ -241,7 +244,7 @@ export default function DenseTable() {
                                     key={row.referensi}
                                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                 >
-                                    <TableCell component="th" scope="row">
+                                    <TableCell component="th" scope="row" align="center">
                                         {row.referensi}
                                     </TableCell>
                                     <TableCell align="left">{row.keterangan}</TableCell>
@@ -253,37 +256,35 @@ export default function DenseTable() {
                 </TableContainer>
             </div>
 
-            <TableContainer component={Paper}>
-                <EnhancedTableToolbar numSelected={selected.length} title="B. Pengeluaran" />
-                <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
+            <div className="pb-4">
+                <TableContainer component={Paper}>
+                    <EnhancedTableToolbar numSelected={selected.length} title="B. Pengeluaran" />
+                    <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
 
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Dessert (100g serving)</TableCell>
-                            <TableCell align="right">Calories</TableCell>
-                            <TableCell align="right">Fat&nbsp;(g)</TableCell>
-                            <TableCell align="right">Carbs&nbsp;(g)</TableCell>
-                            <TableCell align="right">Protein&nbsp;(g)</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {rowsPengeluaran.map((row) => (
-                            <TableRow
-                                key={row.name}
-                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                            >
-                                <TableCell component="th" scope="row">
-                                    {row.name}
-                                </TableCell>
-                                <TableCell align="right">{row.calories}</TableCell>
-                                <TableCell align="right">{row.fat}</TableCell>
-                                <TableCell align="right">{row.carbs}</TableCell>
-                                <TableCell align="right">{row.protein}</TableCell>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell align="center">REFERENSI</TableCell>
+                                <TableCell align="left">KETERANGAN</TableCell>
+                                <TableCell align="right">NOMINAL</TableCell>
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+                        </TableHead>
+                        <TableBody>
+                            {rowsPengeluaran.map((row) => (
+                                <TableRow
+                                    key={row.referensi}
+                                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                >
+                                    <TableCell component="th" scope="row" align="center">
+                                        {row.referensi}
+                                    </TableCell>
+                                    <TableCell align="left">{row.keterangan}</TableCell>
+                                    <TableCell align="right">{row.nominal}</TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            </div>
 
         </>
     );

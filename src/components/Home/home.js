@@ -56,14 +56,20 @@ function stableSort(array, comparator) {
 
 const headCells = [
     {
-        id: 'tanggalId',
+        id: 'noId',
         numeric: false,
         disablePadding: true,
+        label: 'No',
+    },
+    {
+        id: 'tanggalId',
+        numeric: false,
+        disablePadding: false,
         label: 'Tanggal',
     },
     {
         id: 'referensiId',
-        numeric: true,
+        numeric: false,
         disablePadding: false,
         label: 'Referensi',
     },
@@ -242,17 +248,20 @@ export default function EnhancedTable() {
     var rows = [];
 
     if (hasData) {
+        var nomor = 0;
         for (let i = 0; i < hasilData.length; i++) {
-
+            
+            nomor += 1;
             console.log(hasilData[i].referensi[0])
 
             if (hasilData[i].referensi[0] === 'A') {
                 rows.push({
 
+                    noId: nomor,
                     tanggalId: hasilData[i].tanggal,
                     referensiId: hasilData[i].referensi,
                     keteranganId: hasilData[i].keterangan,
-                    pemasukanId: hasilData[i].nominal,
+                    pemasukanId: new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(hasilData[i].nominal),
                     pengeluaranId: null
 
                 });
@@ -261,11 +270,12 @@ export default function EnhancedTable() {
 
                 rows.push({
 
+                    noId: nomor,
                     tanggalId: hasilData[i].tanggal,
                     referensiId: hasilData[i].referensi,
                     keteranganId: hasilData[i].keterangan,
                     pemasukanId: null,
-                    pengeluaranId: hasilData[i].nominal
+                    pengeluaranId: new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(hasilData[i].nominal)
 
                 });
 
@@ -282,19 +292,19 @@ export default function EnhancedTable() {
 
     const handleSelectAllClick = (event) => {
         if (event.target.checked) {
-            const newSelecteds = rows.map((n) => n.tanggalId);
+            const newSelecteds = rows.map((n) => n.noId);
             setSelected(newSelecteds);
             return;
         }
         setSelected([]);
     };
 
-    const handleClick = (event, tanggalId) => {
-        const selectedIndex = selected.indexOf(tanggalId);
+    const handleClick = (event, noId) => {
+        const selectedIndex = selected.indexOf(noId);
         let newSelected = [];
 
         if (selectedIndex === -1) {
-            newSelected = newSelected.concat(selected, tanggalId);
+            newSelected = newSelected.concat(selected, noId);
         } else if (selectedIndex === 0) {
             newSelected = newSelected.concat(selected.slice(1));
         } else if (selectedIndex === selected.length - 1) {
@@ -322,7 +332,7 @@ export default function EnhancedTable() {
         setDense(event.target.checked);
     };
 
-    const isSelected = (tanggalId) => selected.indexOf(tanggalId) !== -1;
+    const isSelected = (noId) => selected.indexOf(noId) !== -1;
 
     // Avoid a layout jump when reaching the last page with empty rows.
     const emptyRows =
@@ -352,17 +362,17 @@ export default function EnhancedTable() {
                             {stableSort(rows, getComparator(order, orderBy))
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 .map((row, index) => {
-                                    const isItemSelected = isSelected(row.tanggalId);
+                                    const isItemSelected = isSelected(row.noId);
                                     const labelId = `enhanced-table-checkbox-${index}`;
 
                                     return (
                                         <TableRow
                                             hover
-                                            onClick={(event) => handleClick(event, row.tanggalId)}
+                                            onClick={(event) => handleClick(event, row.noId)}
                                             role="checkbox"
                                             aria-checked={isItemSelected}
                                             tabIndex={-1}
-                                            key={row.tanggalId}
+                                            key={row.noId}
                                             selected={isItemSelected}
                                         >
                                             <TableCell padding="checkbox">
@@ -380,10 +390,11 @@ export default function EnhancedTable() {
                                                 scope="row"
                                                 padding="none"
                                             >
-                                                {row.tanggalId}
+                                                {row.noId}
                                             </TableCell>
-                                            <TableCell align="right">{row.referensiId}</TableCell>
-                                            <TableCell align="right">{row.keteranganId}</TableCell>
+                                            <TableCell align="left">{row.tanggalId}</TableCell>
+                                            <TableCell align="left">{row.referensiId}</TableCell>
+                                            <TableCell align="left">{row.keteranganId}</TableCell>
                                             <TableCell align="right">{row.pemasukanId}</TableCell>
                                             <TableCell align="right">{row.pengeluaranId}</TableCell>
                                         </TableRow>

@@ -132,7 +132,7 @@ export default function MiniDrawer() {
                             <MenuIcon />
                         </IconButton>
                         <Typography variant="h6" noWrap component="div">
-                            Pengolahan keuangan masjid Al-Muhajirin
+                            Pengolahan Keuangan Masjid Al-Muhajirin
                         </Typography>
                     </Toolbar>
                 </AppBar>
