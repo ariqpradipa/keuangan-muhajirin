@@ -217,11 +217,15 @@ export default function EnhancedTable() {
     const [tanggalDari, setTanggalDari] = React.useState('');
     const [tanggalSampai, setTanggalSampai] = React.useState('');
 
+    const [rows, setRows] = React.useState([]);
+
     const [hasData, setHasData] = React.useState(false);
     const [hasilData, setHasilData] = React.useState(null);
 
     React.useEffect(() => {
+
         getDataDana()
+
     }, []);
 
     const getDataDana = async () => {
@@ -243,6 +247,7 @@ export default function EnhancedTable() {
                     setHasData(true);
 
                 }
+
             })
             .catch(function (error) {
                 // alert("Can't found your team")
@@ -250,9 +255,10 @@ export default function EnhancedTable() {
             });
     }
 
-    var rows = [];
+    var rowsRaw = [];
 
     if (hasData) {
+        setHasData(false);
         var nomor = 0;
         for (let i = 0; i < hasilData.length; i++) {
 
@@ -260,7 +266,7 @@ export default function EnhancedTable() {
             console.log(hasilData[i].referensi[0])
 
             if (hasilData[i].referensi[0] === 'A') {
-                rows.push({
+                rowsRaw.push({
 
                     noId: nomor,
                     tanggalId: hasilData[i].tanggal,
@@ -273,7 +279,7 @@ export default function EnhancedTable() {
 
             } else {
 
-                rows.push({
+                rowsRaw.push({
 
                     noId: nomor,
                     tanggalId: hasilData[i].tanggal,
@@ -287,7 +293,12 @@ export default function EnhancedTable() {
             }
 
         }
+
+        setRows(rowsRaw);
+
     }
+
+
 
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -355,15 +366,60 @@ export default function EnhancedTable() {
                 timer: 1500
             });
 
+        } else {
+            rowsRaw = []
+
+            const y = new Date(tanggalDari);
+            const z = new Date(tanggalSampai);
+            var x;
+
+
+            var nomor = 0;
+            for (let i = 0; i < hasilData.length; i++) {
+
+                nomor += 1;
+                x = new Date(hasilData[i].tanggal);
+
+                if (x > y && x < z) {
+
+                    if (hasilData[i].referensi[0] === 'A') {
+                        rowsRaw.push({
+
+                            noId: nomor,
+                            tanggalId: hasilData[i].tanggal,
+                            referensiId: hasilData[i].referensi,
+                            keteranganId: hasilData[i].keterangan,
+                            pemasukanId: new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(hasilData[i].nominal),
+                            pengeluaranId: null
+
+                        });
+
+                    } else {
+
+                        rowsRaw.push({
+
+                            noId: nomor,
+                            tanggalId: hasilData[i].tanggal,
+                            referensiId: hasilData[i].referensi,
+                            keteranganId: hasilData[i].keterangan,
+                            pemasukanId: null,
+                            pengeluaranId: new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(hasilData[i].nominal)
+
+                        });
+                    }
+                }
+            }
+
+            setRows(rowsRaw);
+
         }
-        console.log(tanggalDari);
-        console.log(tanggalSampai);
     }
 
     return (
         <>
+
             <form onSubmit={onDateFilter}>
-                <div className="flex flex-row pb-5">
+                <div className="flex flex-row">
                     <div className="space-x-8">
                         <TextField
                             label="Dari"
@@ -396,10 +452,18 @@ export default function EnhancedTable() {
                         >
                             Terapkan
                         </button>
-
+                        <button
+                            key="reset"
+                            type="button"
+                            className="no-underline text-white rounded-lg font-semibold  active:bg-gray-500 bg-black py-2 px-4 transition duration-75 ease-in-out"
+                            onClick={() => window.location.reload(false)}
+                        >
+                            Reset
+                        </button>
                     </div>
                 </div>
             </form>
+
 
             <Box sx={{ width: '100%' }}>
                 <Paper sx={{ width: '100%', mb: 2 }}>
