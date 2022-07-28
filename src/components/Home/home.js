@@ -21,7 +21,11 @@ import Switch from '@mui/material/Switch';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import TextField from '@mui/material/TextField';
+import InfoIcon from '@mui/icons-material/Info';
 import { visuallyHidden } from '@mui/utils';
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
+import Button from '@mui/material/Button';
 
 import axios from "axios";
 import { parse } from 'postcss';
@@ -44,6 +48,15 @@ export default function EnhancedTable() {
 
     const [hasData, setHasData] = React.useState(false);
     const [hasilData, setHasilData] = React.useState(null);
+
+    const [open, setOpen] = React.useState(false);
+    const handleClose = () => {
+        setOpen(false);
+    };
+    const handleToggle = () => {
+        setOpen(!open);
+    };
+
 
     function descendingComparator(a, b, orderBy) {
         if (b[orderBy] < a[orderBy]) {
@@ -190,7 +203,7 @@ export default function EnhancedTable() {
                         axios
                             .post(
                                 'http://localhost:4000/danaDelete', {
-                                id: idDana[selected[i]-1],
+                                id: idDana[selected[i] - 1],
                             })
                             .then(function (response) {
 
@@ -218,6 +231,7 @@ export default function EnhancedTable() {
 
 
         }
+
 
 
         return (
@@ -251,19 +265,35 @@ export default function EnhancedTable() {
                     </Typography>
                 )}
 
-                {numSelected > 0 ? (
+                {numSelected > 1 ? (
                     <Tooltip title="Delete">
                         <IconButton onClick={() => deleteData()}>
                             <DeleteIcon />
                         </IconButton>
                     </Tooltip>
-                ) : (
-                    <Tooltip title="Filter list">
-                        <IconButton>
-                            <FilterListIcon />
-                        </IconButton>
-                    </Tooltip>
-                )}
+
+                ) : null}
+                {(numSelected > 0 && numSelected < 2) ? (
+                    <>
+                        <Tooltip title="Info">
+                            <IconButton onClick={handleToggle}>
+                                <InfoIcon />
+                            </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Delete">
+                            <IconButton onClick={() => deleteData()}>
+                                <DeleteIcon />
+                            </IconButton>
+                        </Tooltip>
+                    </>
+                )
+                    : (
+                        <Tooltip title="Filter list">
+                            <IconButton>
+                                <FilterListIcon />
+                            </IconButton>
+                        </Tooltip>
+                    )}
             </Toolbar>
         );
     };
@@ -327,14 +357,17 @@ export default function EnhancedTable() {
                     keteranganId: hasilData[i].keterangan,
                     pemasukanId: new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(hasilData[i].nominal),
                     pengeluaranId: null,
-                    idData: hasilData[i]._id
+                    idData: hasilData[i]._id,
+                    imgData: hasilData[i].gambarBukti
 
                 });
+
 
                 idss.push(hasilData[i]._id);
 
             } else {
                 saldo -= parseInt(hasilData[i].nominal);
+
                 rowsRaw.push({
 
                     noId: nomor,
@@ -343,9 +376,11 @@ export default function EnhancedTable() {
                     keteranganId: hasilData[i].keterangan,
                     pemasukanId: null,
                     pengeluaranId: new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(hasilData[i].nominal),
-                    idData: hasilData[i]._id
+                    idData: hasilData[i]._id,
+                    imgData: hasilData[i].gambarBukti
 
                 });
+
 
                 idss.push(hasilData[i]._id);
 
@@ -444,9 +479,10 @@ export default function EnhancedTable() {
                 nomor += 1;
                 x = new Date(hasilData[i].tanggal);
 
-                if (x > y && x < z) {
+                if (x >= y && x <= z) {
 
                     if (hasilData[i].referensi[0] === 'A') {
+
                         rowsRaw.push({
 
                             noId: nomor,
@@ -455,13 +491,15 @@ export default function EnhancedTable() {
                             keteranganId: hasilData[i].keterangan,
                             pemasukanId: new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(hasilData[i].nominal),
                             pengeluaranId: null,
-                            idData: hasilData[i]._id
+                            idData: hasilData[i]._id,
+                            imgData: hasilData[i].gambarBukti
 
                         });
 
-                        idss.push(hasilData[i]._id);
 
+                        idss.push(hasilData[i]._id);
                     } else {
+
 
                         rowsRaw.push({
 
@@ -471,9 +509,11 @@ export default function EnhancedTable() {
                             keteranganId: hasilData[i].keterangan,
                             pemasukanId: null,
                             pengeluaranId: new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(hasilData[i].nominal),
-                            idData: hasilData[i]._id
+                            idData: hasilData[i]._id,
+                            imgData: hasilData[i].gambarBukti
 
                         });
+
 
                         idss.push(hasilData[i]._id);
 
@@ -635,6 +675,27 @@ export default function EnhancedTable() {
                     label="Dense padding"
                 />
             </Box>
+
+            {(selected.length === 0 || rows[selected[0] - 1].imgData.data === 404) ? (
+                <Backdrop
+                    sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                    open={open}
+                    onClick={handleClose}
+                >
+                    <h1>No Image</h1>
+                </Backdrop>) : (
+
+                <Backdrop
+                    sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                    open={open}
+                    onClick={handleClose}
+                >
+                    <div className="w-1/3">
+                        <img src={`data:image/png;base64,${rows[selected[0] - 1].imgData.data}`}></img>
+                    </div>
+                </Backdrop>
+
+            )}
         </>
     );
 }

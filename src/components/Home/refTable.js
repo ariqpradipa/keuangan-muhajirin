@@ -95,9 +95,6 @@ export default function DenseTable() {
         getDataDana();
     }, []);
 
-    //var A1, A21, A23, A24, A25, A26, A27, A28, A29, A210, A31, A32, A33, A41, A51;
-    //var B1, B2, B3, B4, B5, B6, B7, B8, B9, B10;
-
     var A = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     var B = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
@@ -148,7 +145,6 @@ export default function DenseTable() {
                 }
             })
             .catch(function (error) {
-                // alert("Can't found your team")
                 console.error(error);
             });
     }
@@ -161,6 +157,7 @@ export default function DenseTable() {
     var rowsPengeluaranRaw = [];
 
     if (hasData) {
+        setHasData(false)
         for (let i = 0; i < hasilData.length; i++) {
             if (hasilData[i].referensi === 'A.1') {
                 A[0] += parseInt(hasilData[i].nominal, 10);
@@ -216,10 +213,7 @@ export default function DenseTable() {
                 B[9] += parseInt(hasilData[i].nominal, 10);
             }
         }
-    }
 
-    if (hasDataRef) {
-        sethasDataRef(false)
         var pemasukan = 0;
         var pengeluaran = 0;
 
@@ -237,11 +231,9 @@ export default function DenseTable() {
                     hasilDataRef[i].deskripsi,
                     new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(B[i - 16])
                 ));
-                pengeluaran += parseInt(B[i-16]);
+                pengeluaran += parseInt(B[i - 16]);
             }
         }
-
-
 
         setTotalPemasukan(pemasukan);
         setTotalPengeluaran(pengeluaran);
@@ -277,7 +269,7 @@ export default function DenseTable() {
 
                 x = new Date(hasilData[i].tanggal);
 
-                if (x > y && x < z) {
+                if (x >= y && x <= z) {
                     if (hasilData[i].referensi === 'A.1') {
                         A[0] += parseInt(hasilData[i].nominal, 10);
                     } else if (hasilData[i].referensi === 'A.2.1') {
@@ -350,7 +342,7 @@ export default function DenseTable() {
                         hasilDataRef[i].deskripsi,
                         new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(B[i - 16])
                     ));
-                    pengeluaran += parseInt(B[i-16]);
+                    pengeluaran += parseInt(B[i - 16]);
                 }
             }
 
