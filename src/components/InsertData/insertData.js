@@ -260,6 +260,7 @@ export default function InsertData() {
                             <input hidden accept="image/*" type="file" id="fileInput" onChange={handleChangeFile} />
                         </Button>
                         <h1 className="font-mono text-blue-400">{selectedFile.name}</h1>
+                        {selectedFile.length === 0 ? <></> : <Button onClick={() => setSelectedFile([])}><ClearIcon /></Button>}
                     </div>
 
                 </form>

@@ -28,235 +28,6 @@ import { parse } from 'postcss';
 
 const Swal = require('sweetalert2')
 
-function descendingComparator(a, b, orderBy) {
-    if (b[orderBy] < a[orderBy]) {
-        return -1;
-    }
-    if (b[orderBy] > a[orderBy]) {
-        return 1;
-    }
-    return 0;
-}
-
-function getComparator(order, orderBy) {
-    return order === 'desc'
-        ? (a, b) => descendingComparator(a, b, orderBy)
-        : (a, b) => -descendingComparator(a, b, orderBy);
-}
-
-// This method is created for cross-browser compatibility, if you don't
-// need to support IE11, you can use Array.prototype.sort() directly
-function stableSort(array, comparator) {
-    const stabilizedThis = array.map((el, index) => [el, index]);
-    stabilizedThis.sort((a, b) => {
-        const order = comparator(a[0], b[0]);
-        if (order !== 0) {
-            return order;
-        }
-        return a[1] - b[1];
-    });
-    return stabilizedThis.map((el) => el[0]);
-}
-
-const headCells = [
-    {
-        id: 'noId',
-        numeric: false,
-        disablePadding: true,
-        label: 'No',
-    },
-    {
-        id: 'tanggalId',
-        numeric: false,
-        disablePadding: false,
-        label: 'Tanggal',
-    },
-    {
-        id: 'referensiId',
-        numeric: false,
-        disablePadding: false,
-        label: 'Referensi',
-    },
-    {
-        id: 'keteranganId',
-        numeric: false,
-        disablePadding: false,
-        label: 'Keterangan',
-    },
-    {
-        id: 'pemasukanId',
-        numeric: true,
-        disablePadding: false,
-        label: 'Pemasukan',
-    },
-    {
-        id: 'pengeluaranId',
-        numeric: true,
-        disablePadding: false,
-        label: 'Pengeluaran',
-    },
-];
-var selectedCount;
-function EnhancedTableHead(props) {
-    const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } =
-        props;
-    const createSortHandler = (property) => (event) => {
-        onRequestSort(event, property);
-    };
-
-    return (
-        <TableHead>
-            <TableRow>
-                <TableCell padding="checkbox">
-                    <Checkbox
-                        color="primary"
-                        indeterminate={numSelected > 0 && numSelected < rowCount}
-                        checked={rowCount > 0 && numSelected === rowCount}
-                        onChange={onSelectAllClick}
-                        inputProps={{
-                            'aria-label': 'select all desserts',
-                        }}
-                    />
-                </TableCell>
-                {headCells.map((headCell) => (
-                    <TableCell
-                        key={headCell.id}
-                        align={headCell.numeric ? 'right' : 'left'}
-                        padding={headCell.disablePadding ? 'none' : 'normal'}
-                        sortDirection={orderBy === headCell.id ? order : false}
-                    >
-                        <TableSortLabel
-                            active={orderBy === headCell.id}
-                            direction={orderBy === headCell.id ? order : 'asc'}
-                            onClick={createSortHandler(headCell.id)}
-                        >
-                            {headCell.label}
-                            {orderBy === headCell.id ? (
-                                <Box component="span" sx={visuallyHidden}>
-                                    {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                                </Box>
-                            ) : null}
-                        </TableSortLabel>
-                    </TableCell>
-                ))}
-            </TableRow>
-        </TableHead>
-    );
-}
-
-EnhancedTableHead.propTypes = {
-    numSelected: PropTypes.number.isRequired,
-    onRequestSort: PropTypes.func.isRequired,
-    onSelectAllClick: PropTypes.func.isRequired,
-    order: PropTypes.oneOf(['asc', 'desc']).isRequired,
-    orderBy: PropTypes.string.isRequired,
-    rowCount: PropTypes.number.isRequired,
-};
-
-var rowsFragileData = [];
-var selectedByNumber = [];
-
-const EnhancedTableToolbar = (props) => {
-    const { numSelected } = props;
-
-    const deleteData = () => {
-        Swal.fire({
-            title: 'Yakin ingin menghapus data?',
-            showDenyButton: true,
-            showCancelButton: true,
-            confirmButtonText: 'Yakin',
-            denyButtonText: `Tidak`,
-        }).then((result) => {
-            /* Read more about isConfirmed, isDenied below */
-            if (result.isConfirmed) {
-
-                for (let i = 0; i <= selectedByNumber.length; i++) {
-                    
-                    // console.log(rowsFragileData[selectedByNumber[i]].idData)
-                    // var body = rowsFragileData[selectedByNumber[i]].idData;
-                    axios
-                        .delete(
-                            `http://localhost:4000/danaDelete/`, {
-                                _id: '62e140f837d6156c8a4eb571',
-                            })
-                        .then(function (response) {
-
-                            Swal.fire({
-                                position: 'center',
-                                icon: 'success',
-                                title: 'Data berhasil dihapusss',
-                                showConfirmButton: false,
-                                timer: 1500
-                            });
-
-                        })
-                        .catch(function (error) {
-                            Swal.fire('Data tidak berhasil dihapus', '', 'error')
-                            console.error(error);
-                        });
-                }
-
-            } else if (result.isDenied) {
-                Swal.fire('Data tidak jadi dihapus', '', 'info')
-            }
-        })
-
-
-    }
-
-
-    return (
-        <Toolbar
-            sx={{
-                pl: { sm: 2 },
-                pr: { xs: 1, sm: 1 },
-                ...(numSelected > 0 && {
-                    bgcolor: (theme) =>
-                        alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
-                }),
-            }}
-        >
-            {numSelected > 0 ? (
-                <Typography
-                    sx={{ flex: '1 1 100%' }}
-                    color="inherit"
-                    variant="subtitle1"
-                    component="div"
-                >
-                    {numSelected} selected
-                </Typography>
-            ) : (
-                <Typography
-                    sx={{ flex: '1 1 100%' }}
-                    variant="h6"
-                    id="tableTitle"
-                    component="div"
-                >
-                    Data
-                </Typography>
-            )}
-
-            {numSelected > 0 ? (
-                <Tooltip title="Delete">
-                    <IconButton onClick={() => deleteData()}>
-                        <DeleteIcon />
-                    </IconButton>
-                </Tooltip>
-            ) : (
-                <Tooltip title="Filter list">
-                    <IconButton>
-                        <FilterListIcon />
-                    </IconButton>
-                </Tooltip>
-            )}
-        </Toolbar>
-    );
-};
-
-EnhancedTableToolbar.propTypes = {
-    numSelected: PropTypes.number.isRequired,
-};
-
 export default function EnhancedTable() {
     const [order, setOrder] = React.useState('asc');
     const [orderBy, setOrderBy] = React.useState('calories');
@@ -269,9 +40,237 @@ export default function EnhancedTable() {
     const [saldoAkhir, setSaldoAkhir] = React.useState('');
 
     const [rows, setRows] = React.useState([]);
+    const [idDana, setIdDana] = React.useState([]);
 
     const [hasData, setHasData] = React.useState(false);
     const [hasilData, setHasilData] = React.useState(null);
+
+    function descendingComparator(a, b, orderBy) {
+        if (b[orderBy] < a[orderBy]) {
+            return -1;
+        }
+        if (b[orderBy] > a[orderBy]) {
+            return 1;
+        }
+        return 0;
+    }
+
+    function getComparator(order, orderBy) {
+        return order === 'desc'
+            ? (a, b) => descendingComparator(a, b, orderBy)
+            : (a, b) => -descendingComparator(a, b, orderBy);
+    }
+
+    // This method is created for cross-browser compatibility, if you don't
+    // need to support IE11, you can use Array.prototype.sort() directly
+    function stableSort(array, comparator) {
+        const stabilizedThis = array.map((el, index) => [el, index]);
+        stabilizedThis.sort((a, b) => {
+            const order = comparator(a[0], b[0]);
+            if (order !== 0) {
+                return order;
+            }
+            return a[1] - b[1];
+        });
+        return stabilizedThis.map((el) => el[0]);
+    }
+
+    const headCells = [
+        {
+            id: 'noId',
+            numeric: false,
+            disablePadding: true,
+            label: 'No',
+        },
+        {
+            id: 'tanggalId',
+            numeric: false,
+            disablePadding: false,
+            label: 'Tanggal',
+        },
+        {
+            id: 'referensiId',
+            numeric: false,
+            disablePadding: false,
+            label: 'Referensi',
+        },
+        {
+            id: 'keteranganId',
+            numeric: false,
+            disablePadding: false,
+            label: 'Keterangan',
+        },
+        {
+            id: 'pemasukanId',
+            numeric: true,
+            disablePadding: false,
+            label: 'Pemasukan',
+        },
+        {
+            id: 'pengeluaranId',
+            numeric: true,
+            disablePadding: false,
+            label: 'Pengeluaran',
+        },
+    ];
+    var selectedCount;
+    function EnhancedTableHead(props) {
+        const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } =
+            props;
+        const createSortHandler = (property) => (event) => {
+            onRequestSort(event, property);
+        };
+
+        return (
+            <TableHead>
+                <TableRow>
+                    <TableCell padding="checkbox">
+                        <Checkbox
+                            color="primary"
+                            indeterminate={numSelected > 0 && numSelected < rowCount}
+                            checked={rowCount > 0 && numSelected === rowCount}
+                            onChange={onSelectAllClick}
+                            inputProps={{
+                                'aria-label': 'select all desserts',
+                            }}
+                        />
+                    </TableCell>
+                    {headCells.map((headCell) => (
+                        <TableCell
+                            key={headCell.id}
+                            align={headCell.numeric ? 'right' : 'left'}
+                            padding={headCell.disablePadding ? 'none' : 'normal'}
+                            sortDirection={orderBy === headCell.id ? order : false}
+                        >
+                            <TableSortLabel
+                                active={orderBy === headCell.id}
+                                direction={orderBy === headCell.id ? order : 'asc'}
+                                onClick={createSortHandler(headCell.id)}
+                            >
+                                {headCell.label}
+                                {orderBy === headCell.id ? (
+                                    <Box component="span" sx={visuallyHidden}>
+                                        {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                                    </Box>
+                                ) : null}
+                            </TableSortLabel>
+                        </TableCell>
+                    ))}
+                </TableRow>
+            </TableHead>
+        );
+    }
+
+    EnhancedTableHead.propTypes = {
+        numSelected: PropTypes.number.isRequired,
+        onRequestSort: PropTypes.func.isRequired,
+        onSelectAllClick: PropTypes.func.isRequired,
+        order: PropTypes.oneOf(['asc', 'desc']).isRequired,
+        orderBy: PropTypes.string.isRequired,
+        rowCount: PropTypes.number.isRequired,
+    };
+
+    const EnhancedTableToolbar = (props) => {
+        const { numSelected } = props;
+
+        const deleteData = () => {
+            Swal.fire({
+                title: 'Yakin ingin menghapus data?',
+                showDenyButton: true,
+                showCancelButton: true,
+                confirmButtonText: 'Yakin',
+                denyButtonText: `Tidak`,
+            }).then((result) => {
+                /* Read more about isConfirmed, isDenied below */
+                if (result.isConfirmed) {
+
+                    for (let i = 0; i <= selected.length; i++) {
+
+                        //console.log(idDana[selected[i]-1])
+                        axios
+                            .post(
+                                'http://localhost:4000/danaDelete', {
+                                id: idDana[selected[i]-1],
+                            })
+                            .then(function (response) {
+
+                                Swal.fire({
+                                    position: 'center',
+                                    icon: 'success',
+                                    title: 'Data berhasil dihapus',
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                });
+
+                                window.location.reload(false)
+
+                            })
+                            .catch(function (error) {
+                                Swal.fire('Data tidak berhasil dihapus', '', 'error')
+                                console.error(error);
+                            });
+                    }
+
+                } else if (result.isDenied) {
+                    Swal.fire('Data tidak jadi dihapus', '', 'info')
+                }
+            })
+
+
+        }
+
+
+        return (
+            <Toolbar
+                sx={{
+                    pl: { sm: 2 },
+                    pr: { xs: 1, sm: 1 },
+                    ...(numSelected > 0 && {
+                        bgcolor: (theme) =>
+                            alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
+                    }),
+                }}
+            >
+                {numSelected > 0 ? (
+                    <Typography
+                        sx={{ flex: '1 1 100%' }}
+                        color="inherit"
+                        variant="subtitle1"
+                        component="div"
+                    >
+                        {numSelected} selected
+                    </Typography>
+                ) : (
+                    <Typography
+                        sx={{ flex: '1 1 100%' }}
+                        variant="h6"
+                        id="tableTitle"
+                        component="div"
+                    >
+                        Data
+                    </Typography>
+                )}
+
+                {numSelected > 0 ? (
+                    <Tooltip title="Delete">
+                        <IconButton onClick={() => deleteData()}>
+                            <DeleteIcon />
+                        </IconButton>
+                    </Tooltip>
+                ) : (
+                    <Tooltip title="Filter list">
+                        <IconButton>
+                            <FilterListIcon />
+                        </IconButton>
+                    </Tooltip>
+                )}
+            </Toolbar>
+        );
+    };
+
+    EnhancedTableToolbar.propTypes = {
+        numSelected: PropTypes.number.isRequired,
+    };
 
     React.useEffect(() => {
 
@@ -306,16 +305,13 @@ export default function EnhancedTable() {
             });
     }
 
-    const deleteData = () => {
-        console.log("masuk")
-    }
-
     var rowsRaw = [];
 
     if (hasData) {
         setHasData(false);
         var nomor = 0;
         var saldo = 0;
+        var idss = [];
         for (let i = 0; i < hasilData.length; i++) {
 
             nomor += 1;
@@ -335,6 +331,8 @@ export default function EnhancedTable() {
 
                 });
 
+                idss.push(hasilData[i]._id);
+
             } else {
                 saldo -= parseInt(hasilData[i].nominal);
                 rowsRaw.push({
@@ -349,17 +347,17 @@ export default function EnhancedTable() {
 
                 });
 
+                idss.push(hasilData[i]._id);
+
             }
 
         }
 
         setSaldoAkhir(saldo);
         setRows(rowsRaw);
-        rowsFragileData = rowsRaw;
+        setIdDana(idss);
 
     }
-
-
 
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -394,7 +392,9 @@ export default function EnhancedTable() {
         }
 
         setSelected(newSelected);
-        selectedByNumber = newSelected;
+        // for (let i = 0; i < newSelected.length; i++) {
+        //     console.log(rows[newSelected[i]-1].idData)
+        // }
 
     };
 
@@ -435,6 +435,7 @@ export default function EnhancedTable() {
             const y = new Date(tanggalDari);
             const z = new Date(tanggalSampai);
             var x;
+            var idss = [];
 
 
             var nomor = 0;
@@ -458,6 +459,8 @@ export default function EnhancedTable() {
 
                         });
 
+                        idss.push(hasilData[i]._id);
+
                     } else {
 
                         rowsRaw.push({
@@ -471,12 +474,15 @@ export default function EnhancedTable() {
                             idData: hasilData[i]._id
 
                         });
+
+                        idss.push(hasilData[i]._id);
+
                     }
                 }
             }
 
             setRows(rowsRaw);
-            rowsFragileData = rowsRaw;
+            setIdDana(idss);
 
         }
     }

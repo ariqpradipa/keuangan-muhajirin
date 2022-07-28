@@ -84,6 +84,8 @@ export default function DenseTable() {
     const [hasilData, setHasilData] = React.useState(null);
     const [rowsPendapatan, setRowsPendapatan] = React.useState([]);
     const [rowsPengeluaran, setRowsPengeluaran] = React.useState([]);
+    const [totalPemasukan, setTotalPemasukan] = React.useState("");
+    const [totalPengeluaran, setTotalPengeluaran] = React.useState("");
 
     const [tanggalDari, setTanggalDari] = React.useState('');
     const [tanggalSampai, setTanggalSampai] = React.useState('');
@@ -218,6 +220,9 @@ export default function DenseTable() {
 
     if (hasDataRef) {
         sethasDataRef(false)
+        var pemasukan = 0;
+        var pengeluaran = 0;
+
         for (let i = 0; i < hasilDataRef.length; i++) {
             if (hasilDataRef[i].referensi[0] !== 'B') {
                 rowsPendapatanRaw.push(createData(
@@ -225,15 +230,21 @@ export default function DenseTable() {
                     hasilDataRef[i].deskripsi,
                     new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(A[i])
                 ));
+                pemasukan += parseInt(A[i]);
             } else {
                 rowsPengeluaranRaw.push(createData(
                     hasilDataRef[i].referensi,
                     hasilDataRef[i].deskripsi,
                     new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(B[i - 16])
                 ));
+                pengeluaran += parseInt(B[i-16]);
             }
         }
 
+
+
+        setTotalPemasukan(pemasukan);
+        setTotalPengeluaran(pengeluaran);
         setRowsPendapatan(rowsPendapatanRaw);
         setRowsPengeluaran(rowsPengeluaranRaw);
     }
@@ -323,6 +334,8 @@ export default function DenseTable() {
                 }
             }
 
+            var pemasukan = 0;
+            var pengeluaran = 0;
             for (let i = 0; i < hasilDataRef.length; i++) {
                 if (hasilDataRef[i].referensi[0] !== 'B') {
                     rowsPendapatanRaw.push(createData(
@@ -330,15 +343,19 @@ export default function DenseTable() {
                         hasilDataRef[i].deskripsi,
                         new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(A[i])
                     ));
+                    pemasukan += parseInt(A[i]);
                 } else {
                     rowsPengeluaranRaw.push(createData(
                         hasilDataRef[i].referensi,
                         hasilDataRef[i].deskripsi,
                         new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(B[i - 16])
                     ));
+                    pengeluaran += parseInt(B[i-16]);
                 }
             }
 
+            setTotalPemasukan(pemasukan);
+            setTotalPengeluaran(pengeluaran);
             setRowsPendapatan(rowsPendapatanRaw);
             setRowsPengeluaran(rowsPengeluaranRaw);
 
@@ -392,6 +409,26 @@ export default function DenseTable() {
                     </div>
                 </div>
             </form>
+            <div className="pb-2 space-x-5">
+                <TextField
+                    disabled
+                    id="filled-disabled"
+                    label="Pemasukan"
+                    value={new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(totalPemasukan)}
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
+                />
+                <TextField
+                    disabled
+                    id="filled-disabled"
+                    label="Pengeluaran"
+                    value={new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(totalPengeluaran)}
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
+                />
+            </div>
             <div className="pb-4">
                 <TableContainer component={Paper}>
                     <EnhancedTableToolbar numSelected={selected.length} title="A. Pendapatan" />
