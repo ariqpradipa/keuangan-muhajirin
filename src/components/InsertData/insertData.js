@@ -5,6 +5,9 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import InputLabel from '@mui/material/InputLabel';
 import InputAdornment from '@mui/material/InputAdornment';
 import FormControl from '@mui/material/FormControl';
+import Button from '@mui/material/Button';
+import AttachFileIcon from '@mui/icons-material/AttachFile';
+import ClearIcon from '@mui/icons-material/Clear';
 import axios from "axios";
 
 const Swal = require('sweetalert2')
@@ -16,6 +19,7 @@ export default function InsertData() {
     const [refInput, setRefInput] = React.useState("");
     const [ketValue, setKetValue] = React.useState("");
     const [nominalValue, setNominalValue] = React.useState("");
+    const [selectedFile, setSelectedFile] = React.useState([]);
 
     const [refState, setRefState] = React.useState(true);
 
@@ -64,49 +68,120 @@ export default function InsertData() {
 
         }
 
-        axios
-            .post(
-                "http://localhost:4000/danaInput",
-                {
+        if (selectedFile.length !== 0) {
+
+            console.log("lah kok masuk sini");
+
+            let danaData = new FormData();
+            danaData.append("tanggal", tanggalValue);
+            danaData.append("referensi", refValue.label);
+            danaData.append("keterangan", ketValue);
+            danaData.append("imgBukti", selectedFile);
+            danaData.append("nominal", nominalValue);
+
+
+            var config = {
+                method: 'post',
+                url: 'http://localhost:4000/danaInput',
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                },
+                data: danaData
+            };
+            axios(config)
+                .then(function (response) {
+
+                    Swal.fire({
+                        position: 'center',
+                        icon: 'success',
+                        title: 'Data berhasil ditambahkan',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+
+                    setTanggalValue("");
+                    setRefValue("");
+                    setKetValue("");
+                    setNominalValue("");
+                    setSelectedFile([]);
+                    console.log(response.data);
+
+                    return;
+
+
+                })
+                .catch(function (error) {
+
+                    Swal.fire({
+                        position: 'center',
+                        icon: 'error',
+                        title: 'Gagal memasukkan data',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+
+                    console.error(error);
+                });
+
+
+
+        } else {
+
+            axios
+                .post(
+                    "http://localhost:4000/danaInputDefault", {
+
                     tanggal: tanggalValue,
                     referensi: refValue.label,
                     keterangan: ketValue,
                     nominal: nominalValue
 
                 })
-            .then(function (response) {
+                .then(function (response) {
 
-                Swal.fire({
-                    position: 'center',
-                    icon: 'success',
-                    title: 'Data berhasil ditambahkan',
-                    showConfirmButton: false,
-                    timer: 1500
+                    Swal.fire({
+                        position: 'center',
+                        icon: 'success',
+                        title: 'Data berhasil ditambahkan',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+
+                    setTanggalValue("");
+                    setRefValue("");
+                    setKetValue("");
+                    setNominalValue("");
+                    setSelectedFile([]);
+                    console.log(response.data);
+
+                    return;
+
+                })
+                .catch(function (error) {
+
+                    Swal.fire({
+                        position: 'center',
+                        icon: 'error',
+                        title: 'Gagal memasukkan data',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+
+                    console.error(error);
                 });
 
-                setTanggalValue("");
-                setRefValue("");
-                setKetValue("");
-                setNominalValue("");
-                console.log(response.data);
 
+        }
 
-            })
-            .catch(function (error) {
-
-                Swal.fire({
-                    position: 'center',
-                    icon: 'error',
-                    title: 'Gagal memasukkan data',
-                    showConfirmButton: false,
-                    timer: 1500
-                });
-
-                console.error(error);
-            });
     }
 
+    const handleChangeFile = (e) => {
+        e.preventDefault();
 
+        var imagefile = document.querySelector('#fileInput');
+        setSelectedFile(imagefile.files[0]);
+
+    }
 
     return (
         <>
@@ -140,6 +215,7 @@ export default function InsertData() {
                             renderInput={(params) => <TextField {...params} label="Referensi" />}
 
                         />
+
                         <TextField
                             id="outlined-multiline-flexible"
                             label="Keterangan"
@@ -149,7 +225,6 @@ export default function InsertData() {
                             value={ketValue}
                             onChange={e => setKetValue(e.target.value)}
                         />
-
 
                         {refState ?
                             <FormControl sx={{ width: 220 }}>
@@ -176,14 +251,17 @@ export default function InsertData() {
                             </FormControl>
                         }
 
-                        <button
-                            key="SignIn"
-                            className="no-underline text-white rounded-lg font-semibold  active:bg-gray-500 bg-black py-2 px-4 transition duration-75 ease-in-ou"
-                            type="submit"
-                        >
-                            Submit
-                        </button>
+                        <Button key="submit" type="submit" variant="contained">Submit</Button>
+
                     </div>
+                    <div className="flex pt-2 space-x-2">
+                        <Button variant="contained" component="label" type="button">
+                            <AttachFileIcon /> Foto Pembayaran
+                            <input hidden accept="image/*" type="file" id="fileInput" onChange={handleChangeFile} />
+                        </Button>
+                        <h1 className="font-mono text-blue-400">{selectedFile.name}</h1>
+                    </div>
+
                 </form>
             </div>
         </>

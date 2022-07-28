@@ -14,8 +14,11 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
+import TextField from '@mui/material/TextField';
 
 import axios from "axios";
+
+const Swal = require('sweetalert2')
 
 const EnhancedTableToolbar = (props) => {
     const { numSelected } = props;
@@ -79,6 +82,11 @@ export default function DenseTable() {
     const [hasilDataRef, sethasilDataRef] = React.useState(null);
     const [hasData, setHasData] = React.useState(false);
     const [hasilData, setHasilData] = React.useState(null);
+    const [rowsPendapatan, setRowsPendapatan] = React.useState([]);
+    const [rowsPengeluaran, setRowsPengeluaran] = React.useState([]);
+
+    const [tanggalDari, setTanggalDari] = React.useState('');
+    const [tanggalSampai, setTanggalSampai] = React.useState('');
 
     React.useEffect(() => {
         getDataReferensi();
@@ -147,8 +155,8 @@ export default function DenseTable() {
         return { referensi, keterangan, nominal };
     }
 
-    var rowsPendapatan = [];
-    var rowsPengeluaran = [];
+    var rowsPendapatanRaw = [];
+    var rowsPengeluaranRaw = [];
 
     if (hasData) {
         for (let i = 0; i < hasilData.length; i++) {
@@ -156,32 +164,34 @@ export default function DenseTable() {
                 A[0] += parseInt(hasilData[i].nominal, 10);
             } else if (hasilData[i].referensi === 'A.2.1') {
                 A[1] += parseInt(hasilData[i].nominal, 10);
-            } else if (hasilData[i].referensi === 'A.2.3') {
+            } else if (hasilData[i].referensi === 'A.2.2') {
                 A[2] += parseInt(hasilData[i].nominal, 10);
-            } else if (hasilData[i].referensi === 'A.2.4') {
+            } else if (hasilData[i].referensi === 'A.2.3') {
                 A[3] += parseInt(hasilData[i].nominal, 10);
-            } else if (hasilData[i].referensi === 'A.2.5') {
+            } else if (hasilData[i].referensi === 'A.2.4') {
                 A[4] += parseInt(hasilData[i].nominal, 10);
-            } else if (hasilData[i].referensi === 'A.2.6') {
+            } else if (hasilData[i].referensi === 'A.2.5') {
                 A[5] += parseInt(hasilData[i].nominal, 10);
-            } else if (hasilData[i].referensi === 'A.2.7') {
+            } else if (hasilData[i].referensi === 'A.2.6') {
                 A[6] += parseInt(hasilData[i].nominal, 10);
-            } else if (hasilData[i].referensi === 'A.2.8') {
+            } else if (hasilData[i].referensi === 'A.2.7') {
                 A[7] += parseInt(hasilData[i].nominal, 10);
-            } else if (hasilData[i].referensi === 'A.2.9') {
+            } else if (hasilData[i].referensi === 'A.2.8') {
                 A[8] += parseInt(hasilData[i].nominal, 10);
-            } else if (hasilData[i].referensi === 'A.2.10') {
+            } else if (hasilData[i].referensi === 'A.2.9') {
                 A[9] += parseInt(hasilData[i].nominal, 10);
-            } else if (hasilData[i].referensi === 'A.3.1') {
+            } else if (hasilData[i].referensi === 'A.2.10') {
                 A[10] += parseInt(hasilData[i].nominal, 10);
-            } else if (hasilData[i].referensi === 'A.3.2') {
+            } else if (hasilData[i].referensi === 'A.3.1') {
                 A[11] += parseInt(hasilData[i].nominal, 10);
-            } else if (hasilData[i].referensi === 'A.3.3') {
+            } else if (hasilData[i].referensi === 'A.3.2') {
                 A[12] += parseInt(hasilData[i].nominal, 10);
-            } else if (hasilData[i].referensi === 'A.4.1') {
+            } else if (hasilData[i].referensi === 'A.3.3') {
                 A[13] += parseInt(hasilData[i].nominal, 10);
-            } else if (hasilData[i].referensi === 'A.5.1') {
+            } else if (hasilData[i].referensi === 'A.4.1') {
                 A[14] += parseInt(hasilData[i].nominal, 10);
+            } else if (hasilData[i].referensi === 'A.5.1') {
+                A[15] += parseInt(hasilData[i].nominal, 10);
             } else if (hasilData[i].referensi === 'B.1') {
                 B[0] += parseInt(hasilData[i].nominal, 10);
             } else if (hasilData[i].referensi === 'B.2') {
@@ -207,25 +217,181 @@ export default function DenseTable() {
     }
 
     if (hasDataRef) {
+        sethasDataRef(false)
         for (let i = 0; i < hasilDataRef.length; i++) {
             if (hasilDataRef[i].referensi[0] !== 'B') {
-                rowsPendapatan.push(createData(
+                rowsPendapatanRaw.push(createData(
                     hasilDataRef[i].referensi,
                     hasilDataRef[i].deskripsi,
-                    new Intl.NumberFormat('id-ID', {style: 'currency', currency: 'IDR'}).format(A[i])
+                    new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(A[i])
                 ));
             } else {
-                rowsPengeluaran.push(createData(
+                rowsPengeluaranRaw.push(createData(
                     hasilDataRef[i].referensi,
                     hasilDataRef[i].deskripsi,
-                    new Intl.NumberFormat('id-ID', {style: 'currency', currency: 'IDR'}).format(B[i - 16])
+                    new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(B[i - 16])
                 ));
             }
+        }
+
+        setRowsPendapatan(rowsPendapatanRaw);
+        setRowsPengeluaran(rowsPengeluaranRaw);
+    }
+
+    const onDateFilter = (e) => {
+        e.preventDefault();
+        if (tanggalDari === '' || tanggalSampai === '') {
+
+            Swal.fire({
+                position: 'center',
+                icon: 'error',
+                title: 'Jarak tanggal tidak boleh kosong',
+                showConfirmButton: false,
+                timer: 1500
+            });
+
+        } else {
+
+            rowsPendapatanRaw = []
+            rowsPengeluaranRaw = []
+
+            A = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            B = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+            const y = new Date(tanggalDari);
+            const z = new Date(tanggalSampai);
+            var x;
+
+            for (let i = 0; i < hasilData.length; i++) {
+
+                x = new Date(hasilData[i].tanggal);
+
+                if (x > y && x < z) {
+                    if (hasilData[i].referensi === 'A.1') {
+                        A[0] += parseInt(hasilData[i].nominal, 10);
+                    } else if (hasilData[i].referensi === 'A.2.1') {
+                        A[1] += parseInt(hasilData[i].nominal, 10);
+                    } else if (hasilData[i].referensi === 'A.2.2') {
+                        A[2] += parseInt(hasilData[i].nominal, 10);
+                    } else if (hasilData[i].referensi === 'A.2.3') {
+                        A[3] += parseInt(hasilData[i].nominal, 10);
+                    } else if (hasilData[i].referensi === 'A.2.4') {
+                        A[4] += parseInt(hasilData[i].nominal, 10);
+                    } else if (hasilData[i].referensi === 'A.2.5') {
+                        A[5] += parseInt(hasilData[i].nominal, 10);
+                    } else if (hasilData[i].referensi === 'A.2.6') {
+                        A[6] += parseInt(hasilData[i].nominal, 10);
+                    } else if (hasilData[i].referensi === 'A.2.7') {
+                        A[7] += parseInt(hasilData[i].nominal, 10);
+                    } else if (hasilData[i].referensi === 'A.2.8') {
+                        A[8] += parseInt(hasilData[i].nominal, 10);
+                    } else if (hasilData[i].referensi === 'A.2.9') {
+                        A[9] += parseInt(hasilData[i].nominal, 10);
+                    } else if (hasilData[i].referensi === 'A.2.10') {
+                        A[10] += parseInt(hasilData[i].nominal, 10);
+                    } else if (hasilData[i].referensi === 'A.3.1') {
+                        A[11] += parseInt(hasilData[i].nominal, 10);
+                    } else if (hasilData[i].referensi === 'A.3.2') {
+                        A[12] += parseInt(hasilData[i].nominal, 10);
+                    } else if (hasilData[i].referensi === 'A.3.3') {
+                        A[13] += parseInt(hasilData[i].nominal, 10);
+                    } else if (hasilData[i].referensi === 'A.4.1') {
+                        A[14] += parseInt(hasilData[i].nominal, 10);
+                    } else if (hasilData[i].referensi === 'A.5.1') {
+                        A[15] += parseInt(hasilData[i].nominal, 10);
+                    } else if (hasilData[i].referensi === 'B.1') {
+                        B[0] += parseInt(hasilData[i].nominal, 10);
+                    } else if (hasilData[i].referensi === 'B.2') {
+                        B[1] += parseInt(hasilData[i].nominal, 10);
+                    } else if (hasilData[i].referensi === 'B.3') {
+                        B[2] += parseInt(hasilData[i].nominal, 10);
+                    } else if (hasilData[i].referensi === 'B.4') {
+                        B[3] += parseInt(hasilData[i].nominal, 10);
+                    } else if (hasilData[i].referensi === 'B.5') {
+                        B[4] += parseInt(hasilData[i].nominal, 10);
+                    } else if (hasilData[i].referensi === 'B.6') {
+                        B[5] += parseInt(hasilData[i].nominal, 10);
+                    } else if (hasilData[i].referensi === 'B.7') {
+                        B[6] += parseInt(hasilData[i].nominal, 10);
+                    } else if (hasilData[i].referensi === 'B.8') {
+                        B[7] += parseInt(hasilData[i].nominal, 10);
+                    } else if (hasilData[i].referensi === 'B.9') {
+                        B[8] += parseInt(hasilData[i].nominal, 10);
+                    } else if (hasilData[i].referensi === 'B.10') {
+                        B[9] += parseInt(hasilData[i].nominal, 10);
+                    }
+                }
+            }
+
+            for (let i = 0; i < hasilDataRef.length; i++) {
+                if (hasilDataRef[i].referensi[0] !== 'B') {
+                    rowsPendapatanRaw.push(createData(
+                        hasilDataRef[i].referensi,
+                        hasilDataRef[i].deskripsi,
+                        new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(A[i])
+                    ));
+                } else {
+                    rowsPengeluaranRaw.push(createData(
+                        hasilDataRef[i].referensi,
+                        hasilDataRef[i].deskripsi,
+                        new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(B[i - 16])
+                    ));
+                }
+            }
+
+            setRowsPendapatan(rowsPendapatanRaw);
+            setRowsPengeluaran(rowsPengeluaranRaw);
+
         }
     }
 
     return (
         <>
+            <form onSubmit={onDateFilter}>
+                <div className="flex flex-row pb-5">
+                    <div className="space-x-8">
+                        <TextField
+                            label="Dari"
+                            type="date"
+                            id="outlined-size-small"
+                            value={tanggalDari}
+                            size="small"
+                            InputLabelProps={{
+                                shrink: true,
+                            }}
+                            onChange={e => setTanggalDari(e.target.value)}
+                        />
+                        <TextField
+                            label="Sampai"
+                            type="date"
+                            id="outlined-size-small"
+                            value={tanggalSampai}
+                            size="small"
+                            InputLabelProps={{
+                                shrink: true,
+                            }}
+                            onChange={e => setTanggalSampai(e.target.value)}
+                        />
+                    </div>
+                    <div className="pl-5 space-x-4">
+                        <button
+                            key="terapkan"
+                            className="no-underline text-white rounded-lg font-semibold  active:bg-gray-500 bg-black py-2 px-4 transition duration-75 ease-in-out"
+                            type="submit"
+                        >
+                            Terapkan
+                        </button>
+                        <button
+                            key="reset"
+                            type="button"
+                            className="no-underline text-white rounded-lg font-semibold  active:bg-gray-500 bg-black py-2 px-4 transition duration-75 ease-in-out"
+                            onClick={() => window.location.reload(false)}
+                        >
+                            Reset
+                        </button>
+                    </div>
+                </div>
+            </form>
             <div className="pb-4">
                 <TableContainer component={Paper}>
                     <EnhancedTableToolbar numSelected={selected.length} title="A. Pendapatan" />

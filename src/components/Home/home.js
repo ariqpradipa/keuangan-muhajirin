@@ -24,6 +24,7 @@ import TextField from '@mui/material/TextField';
 import { visuallyHidden } from '@mui/utils';
 
 import axios from "axios";
+import { parse } from 'postcss';
 
 const Swal = require('sweetalert2')
 
@@ -95,7 +96,7 @@ const headCells = [
         label: 'Pengeluaran',
     },
 ];
-
+var selectedCount;
 function EnhancedTableHead(props) {
     const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } =
         props;
@@ -152,8 +153,57 @@ EnhancedTableHead.propTypes = {
     rowCount: PropTypes.number.isRequired,
 };
 
+var rowsFragileData = [];
+var selectedByNumber = [];
+
 const EnhancedTableToolbar = (props) => {
     const { numSelected } = props;
+
+    const deleteData = () => {
+        Swal.fire({
+            title: 'Yakin ingin menghapus data?',
+            showDenyButton: true,
+            showCancelButton: true,
+            confirmButtonText: 'Yakin',
+            denyButtonText: `Tidak`,
+        }).then((result) => {
+            /* Read more about isConfirmed, isDenied below */
+            if (result.isConfirmed) {
+
+                for (let i = 0; i <= selectedByNumber.length; i++) {
+                    
+                    // console.log(rowsFragileData[selectedByNumber[i]].idData)
+                    // var body = rowsFragileData[selectedByNumber[i]].idData;
+                    axios
+                        .delete(
+                            `http://localhost:4000/danaDelete/`, {
+                                _id: '62e140f837d6156c8a4eb571',
+                            })
+                        .then(function (response) {
+
+                            Swal.fire({
+                                position: 'center',
+                                icon: 'success',
+                                title: 'Data berhasil dihapusss',
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+
+                        })
+                        .catch(function (error) {
+                            Swal.fire('Data tidak berhasil dihapus', '', 'error')
+                            console.error(error);
+                        });
+                }
+
+            } else if (result.isDenied) {
+                Swal.fire('Data tidak jadi dihapus', '', 'info')
+            }
+        })
+
+
+    }
+
 
     return (
         <Toolbar
@@ -188,7 +238,7 @@ const EnhancedTableToolbar = (props) => {
 
             {numSelected > 0 ? (
                 <Tooltip title="Delete">
-                    <IconButton>
+                    <IconButton onClick={() => deleteData()}>
                         <DeleteIcon />
                     </IconButton>
                 </Tooltip>
@@ -216,6 +266,7 @@ export default function EnhancedTable() {
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const [tanggalDari, setTanggalDari] = React.useState('');
     const [tanggalSampai, setTanggalSampai] = React.useState('');
+    const [saldoAkhir, setSaldoAkhir] = React.useState('');
 
     const [rows, setRows] = React.useState([]);
 
@@ -255,17 +306,23 @@ export default function EnhancedTable() {
             });
     }
 
+    const deleteData = () => {
+        console.log("masuk")
+    }
+
     var rowsRaw = [];
 
     if (hasData) {
         setHasData(false);
         var nomor = 0;
+        var saldo = 0;
         for (let i = 0; i < hasilData.length; i++) {
 
             nomor += 1;
             console.log(hasilData[i].referensi[0])
 
             if (hasilData[i].referensi[0] === 'A') {
+                saldo += parseInt(hasilData[i].nominal);
                 rowsRaw.push({
 
                     noId: nomor,
@@ -273,12 +330,13 @@ export default function EnhancedTable() {
                     referensiId: hasilData[i].referensi,
                     keteranganId: hasilData[i].keterangan,
                     pemasukanId: new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(hasilData[i].nominal),
-                    pengeluaranId: null
+                    pengeluaranId: null,
+                    idData: hasilData[i]._id
 
                 });
 
             } else {
-
+                saldo -= parseInt(hasilData[i].nominal);
                 rowsRaw.push({
 
                     noId: nomor,
@@ -286,7 +344,8 @@ export default function EnhancedTable() {
                     referensiId: hasilData[i].referensi,
                     keteranganId: hasilData[i].keterangan,
                     pemasukanId: null,
-                    pengeluaranId: new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(hasilData[i].nominal)
+                    pengeluaranId: new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(hasilData[i].nominal),
+                    idData: hasilData[i]._id
 
                 });
 
@@ -294,7 +353,9 @@ export default function EnhancedTable() {
 
         }
 
+        setSaldoAkhir(saldo);
         setRows(rowsRaw);
+        rowsFragileData = rowsRaw;
 
     }
 
@@ -333,6 +394,8 @@ export default function EnhancedTable() {
         }
 
         setSelected(newSelected);
+        selectedByNumber = newSelected;
+
     };
 
     const handleChangePage = (event, newPage) => {
@@ -390,7 +453,8 @@ export default function EnhancedTable() {
                             referensiId: hasilData[i].referensi,
                             keteranganId: hasilData[i].keterangan,
                             pemasukanId: new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(hasilData[i].nominal),
-                            pengeluaranId: null
+                            pengeluaranId: null,
+                            idData: hasilData[i]._id
 
                         });
 
@@ -403,7 +467,8 @@ export default function EnhancedTable() {
                             referensiId: hasilData[i].referensi,
                             keteranganId: hasilData[i].keterangan,
                             pemasukanId: null,
-                            pengeluaranId: new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(hasilData[i].nominal)
+                            pengeluaranId: new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(hasilData[i].nominal),
+                            idData: hasilData[i]._id
 
                         });
                     }
@@ -411,6 +476,7 @@ export default function EnhancedTable() {
             }
 
             setRows(rowsRaw);
+            rowsFragileData = rowsRaw;
 
         }
     }
@@ -419,7 +485,7 @@ export default function EnhancedTable() {
         <>
 
             <form onSubmit={onDateFilter}>
-                <div className="flex flex-row">
+                <div className="flex flex-row pb-5">
                     <div className="space-x-8">
                         <TextField
                             label="Dari"
@@ -463,7 +529,17 @@ export default function EnhancedTable() {
                     </div>
                 </div>
             </form>
-
+            <div className="pb-2 space-x-10">
+                <TextField
+                    disabled
+                    id="filled-disabled"
+                    label="Saldo Akhir"
+                    value={new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(saldoAkhir)}
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
+                />
+            </div>
 
             <Box sx={{ width: '100%' }}>
                 <Paper sx={{ width: '100%', mb: 2 }}>
