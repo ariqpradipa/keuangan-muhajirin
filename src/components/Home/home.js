@@ -21,6 +21,7 @@ import TextField from '@mui/material/TextField';
 import { visuallyHidden } from '@mui/utils';
 import Backdrop from '@mui/material/Backdrop';
 import Autocomplete from '@mui/material/Autocomplete';
+import EditData from '../InsertData/editData';
 import CircularProgress from '@mui/material/CircularProgress';
 import Button from '@mui/material/Button';
 
@@ -30,6 +31,7 @@ import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import InfoIcon from '@mui/icons-material/Info';
+import EditIcon from '@mui/icons-material/Edit';
 
 import axios from "axios";
 import { parse } from 'postcss';
@@ -64,12 +66,18 @@ export default function EnhancedTable() {
     const [hasilData, setHasilData] = React.useState(null);
 
     const [open, setOpen] = React.useState(false);
+    const [editOpen, setEditOpen] = React.useState(false);
     const handleClose = () => {
         setOpen(false);
+        setEditOpen(false);
     };
     const handleToggle = () => {
         setOpen(!open);
     };
+    const handleEdit = () => {
+        setEditOpen(!editOpen);
+    };
+
 
 
     function descendingComparator(a, b, orderBy) {
@@ -248,73 +256,88 @@ export default function EnhancedTable() {
                     Swal.fire('Data tidak jadi dihapus', '', 'info')
                 }
             })
-
-
         }
 
-
-
         return (
-            <Toolbar
-                sx={{
-                    pl: { sm: 2 },
-                    pr: { xs: 1, sm: 1 },
-                    ...(numSelected > 0 && {
-                        bgcolor: (theme) =>
-                            alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
-                    }),
-                }}
-            >
-                {numSelected > 0 ? (
-                    <Typography
-                        sx={{ flex: '1 1 100%' }}
-                        color="inherit"
-                        variant="subtitle1"
-                        component="div"
-                    >
-                        {numSelected} selected
-                    </Typography>
-                ) : (
-                    <Typography
-                        sx={{ flex: '1 1 100%' }}
-                        variant="h6"
-                        id="tableTitle"
-                        component="div"
-                    >
-                        Data
-                    </Typography>
-                )}
+            <>
+                {editOpen ?
+                    (
+                        <Backdrop
+                            sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                            open={editOpen}
+                        >
+                            <div className="flex flex-col items-end space-y-2">
+                                <Button color='error' variant="contained" className="w-[8%]" onClick={handleClose}>Cancel</Button>
+                                <EditData propData={rows[selected - 1]} />
+                            </div>
+                        </Backdrop>
 
-                {numSelected > 1 ? (
-                    <Tooltip title="Delete">
-                        <IconButton onClick={() => deleteData()}>
-                            <DeleteIcon />
-                        </IconButton>
-                    </Tooltip>
+                    ) : null
+                }
 
-                ) : null}
-                {(numSelected > 0 && numSelected < 2) ? (
-                    <>
-                        <Tooltip title="Info">
-                            <IconButton onClick={handleToggle}>
-                                <InfoIcon />
-                            </IconButton>
-                        </Tooltip>
+                <Toolbar
+                    sx={{
+                        pl: { sm: 2 },
+                        pr: { xs: 1, sm: 1 },
+                        ...(numSelected > 0 && {
+                            bgcolor: (theme) =>
+                                alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
+                        }),
+                    }}
+                >
+                    {numSelected > 0 ? (
+                        <Typography
+                            sx={{ flex: '1 1 100%' }}
+                            color="inherit"
+                            variant="subtitle1"
+                            component="div"
+                        >
+                            {numSelected} selected
+                        </Typography>
+                    ) : (
+                        <Typography
+                            sx={{ flex: '1 1 100%' }}
+                            variant="h6"
+                            id="tableTitle"
+                            component="div"
+                        >
+                            Data
+                        </Typography>
+                    )}
+
+                    {numSelected > 1 ? (
                         <Tooltip title="Delete">
                             <IconButton onClick={() => deleteData()}>
                                 <DeleteIcon />
                             </IconButton>
                         </Tooltip>
-                    </>
-                )
-                    : (
-                        <Tooltip title="Filter list">
-                            <IconButton>
-                                <FilterListIcon />
-                            </IconButton>
-                        </Tooltip>
-                    )}
-            </Toolbar>
+
+                    ) : null}
+                    {(numSelected > 0 && numSelected < 2) ? (
+                        <>
+                            <Tooltip title="Info">
+                                <IconButton onClick={handleToggle}>
+                                    <InfoIcon />
+                                </IconButton>
+                            </Tooltip>
+                            <Tooltip title="Edit">
+                                <IconButton onClick={handleEdit}>
+                                    <EditIcon />
+                                </IconButton>
+                            </Tooltip>
+                            <Tooltip title="Delete">
+                                <IconButton onClick={() => deleteData()}>
+                                    <DeleteIcon />
+                                </IconButton>
+                            </Tooltip>
+                        </>
+                    )
+                        : (
+                            <>
+                            </>
+                        )}
+                </Toolbar>
+            </>
         );
     };
 
@@ -375,8 +398,9 @@ export default function EnhancedTable() {
                     noId: nomor,
                     tanggalId: hasilData[i].tanggal,
                     referensiId: hasilData[i].referensi,
+                    kategoriId: hasilData[i].kategori,
                     keteranganId: hasilData[i].keterangan,
-                    pemasukanId: new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(hasilData[i].nominal),
+                    pemasukanId: hasilData[i].nominal,
                     pengeluaranId: null,
                     idData: hasilData[i]._id,
                     imgData: hasilData[i].gambarBukti
@@ -393,9 +417,10 @@ export default function EnhancedTable() {
                     noId: nomor,
                     tanggalId: hasilData[i].tanggal,
                     referensiId: hasilData[i].referensi,
+                    kategoriId: hasilData[i].kategori,
                     keteranganId: hasilData[i].keterangan,
                     pemasukanId: null,
-                    pengeluaranId: new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(hasilData[i].nominal),
+                    pengeluaranId: hasilData[i].nominal,
                     idData: hasilData[i]._id,
                     imgData: hasilData[i].gambarBukti,
 
@@ -517,7 +542,7 @@ export default function EnhancedTable() {
                                 tanggalId: hasilData[i].tanggal,
                                 referensiId: hasilData[i].referensi,
                                 keteranganId: hasilData[i].keterangan,
-                                pemasukanId: new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(hasilData[i].nominal),
+                                pemasukanId: hasilData[i].nominal,
                                 pengeluaranId: null,
                                 idData: hasilData[i]._id,
                                 imgData: hasilData[i].gambarBukti
@@ -536,7 +561,7 @@ export default function EnhancedTable() {
                                 referensiId: hasilData[i].referensi,
                                 keteranganId: hasilData[i].keterangan,
                                 pemasukanId: null,
-                                pengeluaranId: new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(hasilData[i].nominal),
+                                pengeluaranId: hasilData[i].nominal,
                                 idData: hasilData[i]._id,
                                 imgData: hasilData[i].gambarBukti
 
@@ -740,11 +765,11 @@ export default function EnhancedTable() {
                                                     {row.noId}
                                                 </TableCell>
                                                 <TableCell align="left">{row.tanggalId}</TableCell>
-                                                <TableCell align="left" style={{width: 10}}>{row.referensiId}</TableCell>
+                                                <TableCell align="left" style={{ width: 10 }}>{row.referensiId}</TableCell>
                                                 <TableCell align="left">{row.keteranganId}</TableCell>
-                                                <TableCell align="right">{row.pemasukanId}</TableCell>
-                                                <TableCell align="right">{row.pengeluaranId}</TableCell>
-                                                <TableCell align="right" style={{width: 10}}>{row.imgData.data === 404 ? null : <DescriptionIcon />}</TableCell>
+                                                <TableCell align="right">{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(row.pemasukanId)}</TableCell>
+                                                <TableCell align="right">{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(row.pengeluaranId)}</TableCell>
+                                                <TableCell align="right" style={{ width: 10 }}>{row.imgData.data === 404 ? null : <DescriptionIcon />}</TableCell>
                                             </TableRow>
                                         );
                                     })}
