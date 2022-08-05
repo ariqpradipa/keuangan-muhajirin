@@ -58,6 +58,8 @@ export default function EnhancedTable() {
     const [tanggalSampai, setTanggalSampai] = React.useState('');
     const [kategoriValue, setKategoriValue] = React.useState(kategori[0]);
     const [saldoAkhir, setSaldoAkhir] = React.useState('');
+    const [totalPemasukan, setTotalPemasukan] = React.useState('');
+    const [totalPengeluaran, setTotalPengeluaran] = React.useState('');
 
     const [rows, setRows] = React.useState([]);
     const [idDana, setIdDana] = React.useState([]);
@@ -268,7 +270,7 @@ export default function EnhancedTable() {
                         >
                             <div className="flex flex-col items-end space-y-2">
                                 <div className="mr-[1%] pr-[2%]">
-                                    <Button color='error' variant="contained" className="m-[20%] p-[20%]" size='large' sx={{width: 100}} onClick={handleClose}>Cancel</Button>
+                                    <Button color='error' variant="contained" className="m-[20%] p-[20%]" size='large' sx={{ width: 100 }} onClick={handleClose}>Cancel</Button>
                                 </div>
                                 <EditData propData={rows[selected - 1]} />
                             </div>
@@ -385,9 +387,11 @@ export default function EnhancedTable() {
 
     if (hasData) {
         setHasData(false);
-        var nomor = 0;
-        var saldo = 0;
-        var idss = [];
+        let nomor = 0;
+        let saldo = 0;
+        let idss = [];
+        let totPemasukan = 0;
+        let totPengeluaran = 0;
         for (let i = 0; i < hasilData.length; i++) {
 
             nomor += 1;
@@ -395,6 +399,7 @@ export default function EnhancedTable() {
 
             if (hasilData[i].referensi[0] === 'A') {
                 saldo += parseInt(hasilData[i].nominal);
+                totPemasukan += parseInt(hasilData[i].nominal);
                 rowsRaw.push({
 
                     noId: nomor,
@@ -413,6 +418,7 @@ export default function EnhancedTable() {
 
             } else {
                 saldo -= parseInt(hasilData[i].nominal);
+                totPengeluaran += parseInt(hasilData[i].nominal)
 
                 rowsRaw.push({
 
@@ -442,6 +448,8 @@ export default function EnhancedTable() {
 
         }
 
+        setTotalPemasukan(totPemasukan);
+        setTotalPengeluaran(totPengeluaran);
         setSaldoAkhir(saldo);
         setRows(rowsRaw);
         setIdDana(idss);
@@ -523,11 +531,13 @@ export default function EnhancedTable() {
 
             const y = new Date(tanggalDari);
             const z = new Date(tanggalSampai);
-            var x;
-            var idss = [];
+            let x;
+            let idss = [];
 
 
-            var nomor = 0;
+            let nomor = 0;
+            let totPemasukan = 0;
+            let totPengeluaran = 0;
             for (let i = 0; i < hasilData.length; i++) {
 
                 nomor += 1;
@@ -537,7 +547,7 @@ export default function EnhancedTable() {
                     if (hasilData[i].kategori === kategoriValue.label || kategoriValue.label === 'Semua') {
 
                         if (hasilData[i].referensi[0] === 'A') {
-
+                            totPemasukan += parseInt(hasilData[i].nominal);
                             rowsRaw.push({
 
                                 noId: nomor,
@@ -555,7 +565,7 @@ export default function EnhancedTable() {
                             idss.push(hasilData[i]._id);
                         } else {
 
-
+                            totPengeluaran += parseInt(hasilData[i].nominal);
                             rowsRaw.push({
 
                                 noId: nomor,
@@ -625,6 +635,8 @@ export default function EnhancedTable() {
                 }
             }
 
+            setTotalPemasukan(totPemasukan);
+            setTotalPengeluaran(totPengeluaran);
             setRows(rowsRaw);
             setIdDana(idss);
 
@@ -802,6 +814,26 @@ export default function EnhancedTable() {
                     label="Dense padding"
                 />
             </Box>
+            <div className="flex justify-end pb-2 space-x-5">
+                <TextField
+                    disabled
+                    id="filled-disabled"
+                    label="Pemasukan"
+                    value={new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(totalPemasukan)}
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
+                />
+                <TextField
+                    disabled
+                    id="filled-disabled"
+                    label="Pengeluaran"
+                    value={new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(totalPengeluaran)}
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
+                />
+            </div>
 
             {(selected.length === 0 || rows[selected[0] - 1].imgData.data === 404) ? (
                 <Backdrop
