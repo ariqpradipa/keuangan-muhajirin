@@ -25,7 +25,7 @@ export default function InsertData(props) {
     const [kategoriValue, setKategoriValue] = React.useState(propData.kategoriId);
     const [ketValue, setKetValue] = React.useState(propData.keteranganId);
     const [nominalValue, setNominalValue] = React.useState(propData.pemasukanId === null ? parseInt(propData.pengeluaranId) : parseInt(propData.pemasukanId));
-    const [selectedFile, setSelectedFile] = React.useState(propData.imgData.data === 404 ? [] : propData.imgData.data);
+    const [selectedFile, setSelectedFile] = React.useState(propData.imgData.data === 404 ? [] : propData.imgData);
     const [refState, setRefState] = React.useState(true);
 
     const refHandle = (newRef) => {
@@ -82,13 +82,13 @@ export default function InsertData(props) {
 
         }
 
-        if (selectedFile.length !== 0) {
+        if (selectedFile.name !== undefined) {
 
             let danaData = new FormData();
             danaData.append("id", idValue);
             danaData.append("tanggal", tanggalValue);
             danaData.append("referensi", referensiValue[0]);
-            danaData.append("kategori", kategoriValue);
+            danaData.append("kategori", kategoriValue.label === undefined ? kategoriValue : kategoriValue.label);
             danaData.append("keterangan", ketValue);
             danaData.append("imgBukti", selectedFile);
             danaData.append("nominal", nominalValue);
@@ -112,7 +112,7 @@ export default function InsertData(props) {
                         timer: 1500
                     });
 
-                    
+                    window.location.reload();
 
                     return;
                 })
@@ -130,13 +130,15 @@ export default function InsertData(props) {
                 });
         } else {
 
+            console.log("masuk default")
             axios
                 .post(
                     "http://localhost:4000/danaUpdateDefault", {
 
+                    id: idValue,
                     tanggal: tanggalValue,
                     referensi: referensiValue[0],
-                    kategori: kategoriValue.label,
+                    kategori: kategoriValue.label === undefined ? kategoriValue : kategoriValue.label,
                     keterangan: ketValue,
                     nominal: nominalValue
 
@@ -151,13 +153,7 @@ export default function InsertData(props) {
                         timer: 1500
                     });
 
-                    setTanggalValue("");
-                    setRefValue("");
-                    setKategoriValue("");
-                    setKetValue("");
-                    setNominalValue("");
-                    setSelectedFile([]);
-                    console.log(response.data);
+                    window.location.reload();
 
                     return;
 
@@ -174,8 +170,6 @@ export default function InsertData(props) {
 
                     console.error(error);
                 });
-
-
         }
 
     }
@@ -190,7 +184,7 @@ export default function InsertData(props) {
 
     return (
         <>
-            <div className="bg-white p-10 rounded-md">
+            <div className="bg-white m-10 p-8 rounded-md">
                 <div className="flex flex-col">
                     <h1 className="font-sans font-bold text-left text-2xl pb-5 text-black">
                         Pengeditan Data
@@ -269,13 +263,22 @@ export default function InsertData(props) {
                         <Button key="submit" type="submit" variant="contained">Submit</Button>
 
                     </div>
-                    <div className="flex pt-2 space-x-2">
-                        <Button variant="contained" component="label" type="button">
+                    <div className="flex pt-2 space-x-2 flex-col">
+                        <Button variant="contained" component="label" type="button" sx={{ width: 200 }}>
                             <AttachFileIcon /> Upload Dokumen
                             <input hidden accept="image/*" type="file" id="fileInput" onChange={handleChangeFile} />
                         </Button>
-                        <h1 className="font-mono text-blue-400">{selectedFile.name}</h1>
-                        {selectedFile.length === 0 ? <></> : <Button onClick={() => setSelectedFile([])}><ClearIcon /></Button>}
+                        <div className="flex">
+                            {
+                                selectedFile.length !== 0 && selectedFile.name === undefined ?
+                                    (
+                                        <div className="w-1/3">
+                                            <img src={`data:image/png;base64,${selectedFile.data}`}></img>
+                                        </div>
+                                    ) : <h1 className="font-mono text-blue-400">{selectedFile.name}</h1>
+                            }
+                            {selectedFile.length === 0 ? null : <Button onClick={() => setSelectedFile([])}><ClearIcon /></Button>}
+                        </div>
                     </div>
 
                 </form>

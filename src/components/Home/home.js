@@ -267,7 +267,9 @@ export default function EnhancedTable() {
                             open={editOpen}
                         >
                             <div className="flex flex-col items-end space-y-2">
-                                <Button color='error' variant="contained" className="w-[8%]" onClick={handleClose}>Cancel</Button>
+                                <div className="mr-[1%] pr-[2%]">
+                                    <Button color='error' variant="contained" className="m-[20%] p-[20%]" size='large' sx={{width: 100}} onClick={handleClose}>Cancel</Button>
+                                </div>
                                 <EditData propData={rows[selected - 1]} />
                             </div>
                         </Backdrop>
