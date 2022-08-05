@@ -17,6 +17,7 @@ export default function InsertData() {
     const [tanggalValue, setTanggalValue] = React.useState("");
     const [refValue, setRefValue] = React.useState(referensi[0]);
     const [refInput, setRefInput] = React.useState("");
+    const [kategoriValue, setKategoriValue] = React.useState(kategori[0]);
     const [ketValue, setKetValue] = React.useState("");
     const [nominalValue, setNominalValue] = React.useState("");
     const [selectedFile, setSelectedFile] = React.useState([]);
@@ -68,17 +69,17 @@ export default function InsertData() {
 
         }
 
-        if (selectedFile.length !== 0) {
+        let referensiValue = refValue.label.split(" ");
 
-            console.log("lah kok masuk sini");
+        if (selectedFile.length !== 0) {
 
             let danaData = new FormData();
             danaData.append("tanggal", tanggalValue);
-            danaData.append("referensi", refValue.label);
+            danaData.append("referensi", referensiValue[0]);
+            danaData.append("kategori", kategoriValue.label);
             danaData.append("keterangan", ketValue);
             danaData.append("imgBukti", selectedFile);
             danaData.append("nominal", nominalValue);
-
 
             var config = {
                 method: 'post',
@@ -101,6 +102,7 @@ export default function InsertData() {
 
                     setTanggalValue("");
                     setRefValue("");
+                    setKategoriValue("");
                     setKetValue("");
                     setNominalValue("");
                     setSelectedFile([]);
@@ -122,9 +124,6 @@ export default function InsertData() {
 
                     console.error(error);
                 });
-
-
-
         } else {
 
             axios
@@ -132,7 +131,8 @@ export default function InsertData() {
                     "http://localhost:4000/danaInputDefault", {
 
                     tanggal: tanggalValue,
-                    referensi: refValue.label,
+                    referensi: referensiValue[0],
+                    kategori: kategoriValue.label,
                     keterangan: ketValue,
                     nominal: nominalValue
 
@@ -149,6 +149,7 @@ export default function InsertData() {
 
                     setTanggalValue("");
                     setRefValue("");
+                    setKategoriValue("");
                     setKetValue("");
                     setNominalValue("");
                     setSelectedFile([]);
@@ -211,8 +212,18 @@ export default function InsertData() {
                             onInputChange={(e, newInputVal) => refHandle(newInputVal)}
                             id="combo-box-demo"
                             options={referensi}
-                            sx={{ width: 132 }}
+                            sx={{ width: 390 }}
                             renderInput={(params) => <TextField {...params} label="Referensi" />}
+
+                        />
+                        <Autocomplete
+                            disablePortal
+                            value={kategoriValue}
+                            onChange={(e, newVal) => setKategoriValue(newVal)}
+                            id="combo-box-demo"
+                            options={kategori}
+                            sx={{ width: 175 }}
+                            renderInput={(params) => <TextField {...params} label="Kategori" />}
 
                         />
 
@@ -256,7 +267,7 @@ export default function InsertData() {
                     </div>
                     <div className="flex pt-2 space-x-2">
                         <Button variant="contained" component="label" type="button">
-                            <AttachFileIcon /> Foto Pembayaran
+                            <AttachFileIcon /> Upload Dokumen
                             <input hidden accept="image/*" type="file" id="fileInput" onChange={handleChangeFile} />
                         </Button>
                         <h1 className="font-mono text-blue-400">{selectedFile.name}</h1>
@@ -270,31 +281,67 @@ export default function InsertData() {
 }
 
 const referensi = [
-    { label: 'A.1' },
-    { label: 'A.2.1' },
-    { label: 'A.2.2' },
-    { label: 'A.2.3' },
-    { label: 'A.2.4' },
-    { label: 'A.2.5' },
-    { label: 'A.2.6' },
-    { label: 'A.2.7' },
-    { label: 'A.2.8' },
-    { label: 'A.2.9' },
-    { label: 'A.2.10' },
-    { label: 'A.3.1' },
-    { label: 'A.3.2' },
-    { label: 'A.3.3' },
-    { label: 'A.4.1' },
-    { label: 'A.5.1' },
+    { label: 'A.1 Saldo Tahun Sebelumnya' },
+    { label: "A.2.1 Tromol Jum'at" },
+    { label: 'A.2.2 Kencleng Sedekah Subuh & Harian' },
+    { label: 'A.2.3 Tromol Teraweh' },
+    { label: 'A.2.4 Tromol Idul Fitri' },
+    { label: 'A.2.5 Tromol Idul Adha' },
+    { label: 'A.2.6 Tromol Yatim' },
+    { label: 'A.2.7 Tromol Baitul Maal' },
+    { label: 'A.2.8 Donatur Bulanan (Kartu)' },
+    { label: 'A.2.9 Infaq & Sedekah' },
+    { label: 'A.2.10 Bazis Ramadhan' },
+    { label: 'A.3.1 Infaq Tablig Akbar' },
+    { label: 'A.3.2 Gema Ramadhan' },
+    { label: 'A.3.3 Infaq Renovasi' },
+    { label: 'A.4.1 Proposal' },
+    { label: 'A.5.1 Iuran anggota layanan kedukaan' },
 
-    { label: 'B.1' },
-    { label: 'B.2' },
-    { label: 'B.3' },
-    { label: 'B.4' },
-    { label: 'B.5' },
-    { label: 'B.6' },
-    { label: 'B.7' },
-    { label: 'B.8' },
-    { label: 'B.9' },
-    { label: 'B.10' },
+    { label: 'B.1 Operasional Keskretariatan' },
+    { label: 'B.2 Operasional Kebendaharaan' },
+    { label: 'B.3 Bidang Usaha' },
+    { label: 'B.4 Bidang Peribadatan dan PHBI' },
+    { label: 'B.5 Bidang Pendidikan dan Dakwah' },
+    { label: 'B.6 Bidang PPPFS' },
+    { label: 'B.7 Bidang Humas dan Lembaga' },
+    { label: 'B.8 Bidang Pemeliharaan & Perlengkapan' },
+    { label: 'B.9 Bidang Pemuda & Remaja Masjid' },
+    { label: 'B.10 Bidang Pembinaan Wanita' },
 ];
+
+const kategori = [
+    { label: 'Operasional' },
+    { label: 'Anak Yatim' },
+    { label: 'Baitul Mal' },
+    { label: 'Renovasi' }
+]
+
+const refs = [
+    'A.1',
+    'A.2.1',
+    'A.2.2',
+    'A.2.3',
+    'A.2.4',
+    'A.2.5',
+    'A.2.6',
+    'A.2.7',
+    'A.2.8',
+    'A.2.9',
+    'A.2.10',
+    'A.3.1',
+    'A.3.2',
+    'A.3.3',
+    'A.4.1',
+    'A.5.1',
+    'B.1',
+    'B.2',
+    'B.3',
+    'B.4',
+    'B.5',
+    'B.6',
+    'B.7',
+    'B.8',
+    'B.9',
+    'B.10',
+]
