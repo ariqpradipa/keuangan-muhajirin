@@ -554,13 +554,27 @@ export default function EnhancedTable() {
             } else {
 
                 document.getElementById('judul-laporan').style.display = 'flex';
-                document.getElementById('tanggal-laporan').style.display = 'flex';
-
                 document.getElementById('judul-laporan').innerHTML = 'Laporan Keuangan Masjid Al-Muhajirin';
-                document.getElementById('tanggal-laporan').innerHTML =
-                    new Date(tanggalDari).toLocaleDateString('id-ID', { month: 'long', day: 'numeric' })
-                    + ' s/d '
-                    + new Date(tanggalSampai).toLocaleDateString('id-ID', { month: 'long', day: 'numeric' });
+
+                document.getElementById('tanggal-laporan').style.display = 'flex';
+                let tanggalTarget = new Date(tanggalSampai).toLocaleDateString('id-ID', { month: 'long', day: 'numeric' });
+                let lastMonth = new Date(tanggalDari);
+                lastMonth.setMonth(lastMonth.getMonth() + 1);
+                lastMonth.setDate(-0);
+                lastMonth = new Date(lastMonth).toLocaleDateString('id-ID', { month: 'long', day: 'numeric' });
+                if (new Date(tanggalDari).toLocaleDateString('id-ID', { day: 'numeric' }) === '1' && lastMonth === tanggalTarget) {
+
+                    document.getElementById('tanggal-laporan').innerHTML = 'Bulan '
+                        + new Date(tanggalDari).toLocaleDateString('id-ID', { month: 'long' });
+
+                } else {
+
+                    document.getElementById('tanggal-laporan').innerHTML =
+                        new Date(tanggalDari).toLocaleDateString('id-ID', { month: 'long', day: 'numeric' })
+                        + ' s/d '
+                        + new Date(tanggalSampai).toLocaleDateString('id-ID', { month: 'long', day: 'numeric' });
+
+                }
 
                 if (kategoriValue.label !== 'Semua') {
                     document.getElementById('kategori-laporan').style.display = 'flex';
