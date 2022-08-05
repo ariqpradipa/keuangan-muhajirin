@@ -24,6 +24,7 @@ import TextField from '@mui/material/TextField';
 import InfoIcon from '@mui/icons-material/Info';
 import { visuallyHidden } from '@mui/utils';
 import Backdrop from '@mui/material/Backdrop';
+import Autocomplete from '@mui/material/Autocomplete';
 import CircularProgress from '@mui/material/CircularProgress';
 import Button from '@mui/material/Button';
 
@@ -31,6 +32,15 @@ import axios from "axios";
 import { parse } from 'postcss';
 
 const Swal = require('sweetalert2')
+
+const kategori = [
+    { label: 'Semua' },
+    { label: 'Operasional' },
+    { label: 'Anak Yatim' },
+    { label: 'Baitul Mal' },
+    { label: 'Renovasi' }
+]
+
 
 export default function EnhancedTable() {
     const [order, setOrder] = React.useState('asc');
@@ -41,6 +51,7 @@ export default function EnhancedTable() {
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const [tanggalDari, setTanggalDari] = React.useState('');
     const [tanggalSampai, setTanggalSampai] = React.useState('');
+    const [kategoriValue, setKategoriValue] = React.useState(kategori[0]);
     const [saldoAkhir, setSaldoAkhir] = React.useState('');
 
     const [rows, setRows] = React.useState([]);
@@ -480,44 +491,80 @@ export default function EnhancedTable() {
                 x = new Date(hasilData[i].tanggal);
 
                 if (x >= y && x <= z) {
+                    if (hasilData[i].kategori === kategoriValue.label || kategoriValue.label === 'Semua') {
 
-                    if (hasilData[i].referensi[0] === 'A') {
+                        if (hasilData[i].referensi[0] === 'A') {
 
-                        rowsRaw.push({
+                            rowsRaw.push({
 
-                            noId: nomor,
-                            tanggalId: hasilData[i].tanggal,
-                            referensiId: hasilData[i].referensi,
-                            keteranganId: hasilData[i].keterangan,
-                            pemasukanId: new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(hasilData[i].nominal),
-                            pengeluaranId: null,
-                            idData: hasilData[i]._id,
-                            imgData: hasilData[i].gambarBukti
+                                noId: nomor,
+                                tanggalId: hasilData[i].tanggal,
+                                referensiId: hasilData[i].referensi,
+                                keteranganId: hasilData[i].keterangan,
+                                pemasukanId: new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(hasilData[i].nominal),
+                                pengeluaranId: null,
+                                idData: hasilData[i]._id,
+                                imgData: hasilData[i].gambarBukti
 
-                        });
-
-
-                        idss.push(hasilData[i]._id);
-                    } else {
+                            });
 
 
-                        rowsRaw.push({
-
-                            noId: nomor,
-                            tanggalId: hasilData[i].tanggal,
-                            referensiId: hasilData[i].referensi,
-                            keteranganId: hasilData[i].keterangan,
-                            pemasukanId: null,
-                            pengeluaranId: new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(hasilData[i].nominal),
-                            idData: hasilData[i]._id,
-                            imgData: hasilData[i].gambarBukti
-
-                        });
+                            idss.push(hasilData[i]._id);
+                        } else {
 
 
-                        idss.push(hasilData[i]._id);
+                            rowsRaw.push({
 
+                                noId: nomor,
+                                tanggalId: hasilData[i].tanggal,
+                                referensiId: hasilData[i].referensi,
+                                keteranganId: hasilData[i].keterangan,
+                                pemasukanId: null,
+                                pengeluaranId: new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(hasilData[i].nominal),
+                                idData: hasilData[i]._id,
+                                imgData: hasilData[i].gambarBukti
+
+                            });
+
+
+                            idss.push(hasilData[i]._id);
+
+                        }
                     }
+                }
+            }
+
+            document.getElementById('judul-laporan').style.display = 'none';
+            document.getElementById('kategori-laporan').style.display = 'none';
+            document.getElementById('tanggal-laporan').style.display = 'none';
+
+            if (tanggalDari === tanggalSampai) {
+
+                document.getElementById('judul-laporan').style.display = 'flex';
+                document.getElementById('tanggal-laporan').style.display = 'flex';
+
+                document.getElementById('judul-laporan').innerHTML = 'Laporan Keuangan Masjid Al-Muhajirin';
+                document.getElementById('tanggal-laporan').innerHTML = new Date(tanggalDari).toLocaleDateString('id-ID', { month: 'long', day: 'numeric' });
+
+                if (kategoriValue.label !== 'Semua') {
+                    document.getElementById('kategori-laporan').style.display = 'flex';
+                    document.getElementById('kategori-laporan').innerHTML = kategoriValue.label;
+                }
+
+            } else {
+
+                document.getElementById('judul-laporan').style.display = 'flex';
+                document.getElementById('tanggal-laporan').style.display = 'flex';
+
+                document.getElementById('judul-laporan').innerHTML = 'Laporan Keuangan Masjid Al-Muhajirin';
+                document.getElementById('tanggal-laporan').innerHTML =
+                    new Date(tanggalDari).toLocaleDateString('id-ID', { month: 'long', day: 'numeric' })
+                    + ' s/d '
+                    + new Date(tanggalSampai).toLocaleDateString('id-ID', { month: 'long', day: 'numeric' });
+
+                if (kategoriValue.label !== 'Semua') {
+                    document.getElementById('kategori-laporan').style.display = 'flex';
+                    document.getElementById('kategori-laporan').innerHTML = kategoriValue.label;
                 }
             }
 
@@ -527,9 +574,10 @@ export default function EnhancedTable() {
         }
     }
 
+
+
     return (
         <>
-
             <form onSubmit={onDateFilter}>
                 <div className="flex flex-row pb-5">
                     <div className="space-x-8">
@@ -556,7 +604,17 @@ export default function EnhancedTable() {
                             onChange={e => setTanggalSampai(e.target.value)}
                         />
                     </div>
-                    <div className="pl-5 space-x-4">
+                    <div className="pl-5 space-x-4 flex-row flex">
+                        <Autocomplete
+                            disablePortal
+                            value={kategoriValue}
+                            onChange={(e, newVal) => setKategoriValue(newVal)}
+                            options={kategori}
+                            size="small"
+                            sx={{ width: 175 }}
+                            renderInput={(params) => <TextField {...params} label="Kategori" />}
+
+                        />
                         <button
                             key="terapkan"
                             className="no-underline text-white rounded-lg font-semibold  active:bg-gray-500 bg-black py-2 px-4 transition duration-75 ease-in-out"
@@ -585,6 +643,16 @@ export default function EnhancedTable() {
                         shrink: true,
                     }}
                 />
+            </div>
+
+            <div id="judul-laporan" className="justify-center text-3xl font-bold m-2 pt-2 hidden">
+
+            </div>
+            <div id="kategori-laporan" className="hidden justify-center text-3xl font-bold m-2 pt-2">
+
+            </div>
+            <div id="tanggal-laporan" className="hidden justify-center text-3xl font-bold m-2 pt-2">
+
             </div>
 
             <Box sx={{ width: '100%' }}>
