@@ -14,19 +14,22 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import Checkbox from '@mui/material/Checkbox';
-import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
-import DeleteIcon from '@mui/icons-material/Delete';
-import FilterListIcon from '@mui/icons-material/FilterList';
 import TextField from '@mui/material/TextField';
-import InfoIcon from '@mui/icons-material/Info';
 import { visuallyHidden } from '@mui/utils';
 import Backdrop from '@mui/material/Backdrop';
 import Autocomplete from '@mui/material/Autocomplete';
 import CircularProgress from '@mui/material/CircularProgress';
 import Button from '@mui/material/Button';
+
+// icons
+import DescriptionIcon from '@mui/icons-material/Description';
+import IconButton from '@mui/material/IconButton';
+import DeleteIcon from '@mui/icons-material/Delete';
+import FilterListIcon from '@mui/icons-material/FilterList';
+import InfoIcon from '@mui/icons-material/Info';
 
 import axios from "axios";
 import { parse } from 'postcss';
@@ -136,6 +139,12 @@ export default function EnhancedTable() {
             disablePadding: false,
             label: 'Pengeluaran',
         },
+        {
+            id: 'imgData',
+            numeric: true,
+            disablePadding: false,
+            label: 'Attachment',
+        }
     ];
     var selectedCount;
     function EnhancedTableHead(props) {
@@ -346,7 +355,8 @@ export default function EnhancedTable() {
             });
     }
 
-    var rowsRaw = [];
+    let rowsRaw = [];
+    let hasImg = [];
 
     if (hasData) {
         setHasData(false);
@@ -373,7 +383,6 @@ export default function EnhancedTable() {
 
                 });
 
-
                 idss.push(hasilData[i]._id);
 
             } else {
@@ -388,13 +397,20 @@ export default function EnhancedTable() {
                     pemasukanId: null,
                     pengeluaranId: new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(hasilData[i].nominal),
                     idData: hasilData[i]._id,
-                    imgData: hasilData[i].gambarBukti
+                    imgData: hasilData[i].gambarBukti,
 
                 });
 
 
                 idss.push(hasilData[i]._id);
 
+            }
+
+            if (hasilData[i].gambarBukti.data !== 404) {
+                //hasImg.push(DescriptionIcon);
+                hasImg.push("ada");
+            } else {
+                hasImg.push(null);
             }
 
         }
@@ -592,6 +608,7 @@ export default function EnhancedTable() {
 
     return (
         <>
+            {console.log(hasImg)}
             <form onSubmit={onDateFilter}>
                 <div className="flex flex-row pb-5">
                     <div className="space-x-8">
@@ -723,10 +740,11 @@ export default function EnhancedTable() {
                                                     {row.noId}
                                                 </TableCell>
                                                 <TableCell align="left">{row.tanggalId}</TableCell>
-                                                <TableCell align="left">{row.referensiId}</TableCell>
+                                                <TableCell align="left" style={{width: 10}}>{row.referensiId}</TableCell>
                                                 <TableCell align="left">{row.keteranganId}</TableCell>
                                                 <TableCell align="right">{row.pemasukanId}</TableCell>
                                                 <TableCell align="right">{row.pengeluaranId}</TableCell>
+                                                <TableCell align="right" style={{width: 10}}>{row.imgData.data === 404 ? null : <DescriptionIcon />}</TableCell>
                                             </TableRow>
                                         );
                                     })}
