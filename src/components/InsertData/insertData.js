@@ -193,85 +193,103 @@ export default function InsertData() {
                     </h1>
                 </div>
                 <form onSubmit={onSubmitForm}>
-                    <div className="flex gap-2">
-                        <TextField
-                            id="outlined-basic"
-                            label="Tanggal"
-                            InputLabelProps={{
-                                shrink: true,
-                            }}
-                            type="date"
-                            value={tanggalValue}
-                            onChange={e => setTanggalValue(e.target.value)}
-                        />
-                        <Autocomplete
-                            disablePortal
-                            value={refValue}
-                            onChange={(e, newVal) => setRefValue(newVal)}
-                            inputValue={refInput}
-                            onInputChange={(e, newInputVal) => refHandle(newInputVal)}
-                            id="combo-box-demo"
-                            options={referensi}
-                            sx={{ width: 390 }}
-                            renderInput={(params) => <TextField {...params} label="Referensi" />}
-
-                        />
-                        <Autocomplete
-                            disablePortal
-                            value={kategoriValue}
-                            onChange={(e, newVal) => setKategoriValue(newVal)}
-                            id="combo-box-demo"
-                            options={kategori}
-                            sx={{ width: 175 }}
-                            renderInput={(params) => <TextField {...params} label="Kategori" />}
-
-                        />
-
-                        <TextField
-                            id="outlined-multiline-flexible"
-                            label="Keterangan"
-                            multiline
-                            maxRows={5}
-                            sx={{ width: 300 }}
-                            value={ketValue}
-                            onChange={e => setKetValue(e.target.value)}
-                        />
-
-                        {refState ?
-                            <FormControl sx={{ width: 220 }}>
-                                <InputLabel htmlFor="outlined-adornment-amount">Pemasukan</InputLabel>
-                                <OutlinedInput
-                                    id="outlined-adornment-amount"
-                                    type="number"
-                                    startAdornment={<InputAdornment position="start">Rp</InputAdornment>}
-                                    label="Pemasukan"
-                                    value={nominalValue}
-                                    onChange={e => setNominalValue(e.target.value)}
+                    <div className="">
+                        <div className="flex flex-col">
+                            <div className="flex flex-col sm:flex-row gap-2 mb-4">
+                                <TextField
+                                    id="outlined-basic"
+                                    label="Tanggal"
+                                    InputLabelProps={{
+                                        shrink: true,
+                                    }}
+                                    type="date"
+                                    sx={{width:230}}
+                                    value={tanggalValue}
+                                    onChange={e => setTanggalValue(e.target.value)}
                                 />
-                            </FormControl> :
-                            <FormControl sx={{ width: 220 }}>
-                                <InputLabel htmlFor="outlined-adornment-amount">Pengeluaran</InputLabel>
-                                <OutlinedInput
-                                    id="outlined-adornment-amount"
-                                    type="number"
-                                    startAdornment={<InputAdornment position="start">Rp</InputAdornment>}
-                                    label="Pengeluaran"
-                                    value={nominalValue}
-                                    onChange={e => setNominalValue(e.target.value)}
+                                <Autocomplete
+                                    disablePortal
+                                    value={refValue}
+                                    onChange={(e, newVal) => setRefValue(newVal)}
+                                    inputValue={refInput}
+                                    onInputChange={(e, newInputVal) => refHandle(newInputVal)}
+                                    id="combo-box-demo"
+                                    options={referensi}
+                                    sx={{ width: 99.9/100 }}
+                                    renderInput={(params) => <TextField {...params} label="Referensi" />}
+
                                 />
-                            </FormControl>
-                        }
+                            </div>
 
-                        <Button key="submit" type="submit" variant="contained">Submit</Button>
+                            <div className="flex flex-col sm:flex-row gap-2 mb-4">
+                                <Autocomplete
+                                    disablePortal
+                                    value={kategoriValue}
+                                    onChange={(e, newVal) => setKategoriValue(newVal)}
+                                    id="combo-box-demo"
+                                    options={kategori}
+                                    sx={{ width: 250 }}
+                                    renderInput={(params) => <TextField {...params} label="Kategori" />}
 
-                    </div>
-                    <div className="flex pt-2 space-x-2">
-                        <Button variant="contained" component="label" type="button">
-                            <AttachFileIcon /> Upload Dokumen
-                            <input hidden accept="image/*" type="file" id="fileInput" onChange={handleChangeFile} />
-                        </Button>
-                        <h1 className="font-mono text-blue-400">{selectedFile.name}</h1>
-                        {selectedFile.length === 0 ? <></> : <Button onClick={() => setSelectedFile([])}><ClearIcon /></Button>}
+                                />
+
+                                <TextField
+                                    id="outlined-multiline-flexible"
+                                    label="Keterangan"
+                                    multiline
+                                    maxRows={5}
+                                    sx={{ width: 99.9/100 }}
+                                    value={ketValue}
+                                    onChange={e => setKetValue(e.target.value)}
+                                />
+                            </div>
+
+                            <div className="flex gap-2 mb-4">
+
+                                {refState ?
+                                    <FormControl sx={{ width: 250 }}>
+                                        <InputLabel htmlFor="outlined-adornment-amount">Pemasukan</InputLabel>
+                                        <OutlinedInput
+                                            id="outlined-adornment-amount"
+                                            type="number"
+                                            startAdornment={<InputAdornment position="start">Rp</InputAdornment>}
+                                            label="Pemasukan"
+                                            value={nominalValue}
+                                            onChange={e => setNominalValue(e.target.value)}
+                                        />
+                                    </FormControl> :
+                                    <FormControl sx={{ width: 250 }}>
+                                        <InputLabel htmlFor="outlined-adornment-amount">Pengeluaran</InputLabel>
+                                        <OutlinedInput
+                                            id="outlined-adornment-amount"
+                                            type="number"
+                                            startAdornment={<InputAdornment position="start">Rp</InputAdornment>}
+                                            label="Pengeluaran"
+                                            value={nominalValue}
+                                            onChange={e => setNominalValue(e.target.value)}
+                                        />
+                                    </FormControl>
+                                }
+
+                                
+
+                            </div>
+                            <Button key="submit" type="submit" variant="contained">
+                                    <div className="ml-5 mr-5">
+                                        Submit
+                                    </div>
+                                </Button>
+
+                        </div>
+
+                        <div className="flex pt-2 space-x-2">
+                            <Button variant="contained" component="label" type="button">
+                                <AttachFileIcon /> Upload Dokumen
+                                <input hidden accept="image/*" type="file" id="fileInput" onChange={handleChangeFile} />
+                            </Button>
+                            <h1 className="font-mono text-blue-400">{selectedFile.name}</h1>
+                            {selectedFile.length === 0 ? <></> : <Button onClick={() => setSelectedFile([])}><ClearIcon /></Button>}
+                        </div>
                     </div>
 
                 </form>

@@ -160,7 +160,7 @@ export default function MiniDrawer() {
                                             justifyContent: 'center',
                                         }}
                                     >
-                                        {index % 2 === 0 ? <HomeIcon onClick={() => setHomeState(true)}/> : <InboxIcon  onClick={() => setHomeState(false)}/>}
+                                        {index % 2 === 0 ? <HomeIcon onClick={() => setHomeState(true)} /> : <InboxIcon onClick={() => setHomeState(false)} />}
                                     </ListItemIcon>
                                     <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
                                 </ListItemButton>

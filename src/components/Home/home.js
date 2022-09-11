@@ -643,11 +643,8 @@ export default function EnhancedTable() {
         }
     }
 
-
-
     return (
         <>
-            {console.log(hasImg)}
             <form onSubmit={onDateFilter}>
                 <div className="flex flex-row pb-5">
                     <div className="space-x-8">
