@@ -32,14 +32,14 @@ export default function CookieChecker() {
     const getValidToken = () => {
 
         axios
-            .post("/auth/validateToken", {
+            .post("http://localhost:4000/validateToken", {
                 username: Cookies.get(username),
                 token: Cookies.get(tokenName)
             })
             .then((response) => {
 
                 if (response.data === 3302) {
-                    
+
                     nav("/home")
                     return;
 
