@@ -203,7 +203,7 @@ export default function InsertData() {
                                         shrink: true,
                                     }}
                                     type="date"
-                                    sx={{width:230}}
+                                    sx={{ width: 230 }}
                                     value={tanggalValue}
                                     onChange={e => setTanggalValue(e.target.value)}
                                 />
@@ -215,7 +215,7 @@ export default function InsertData() {
                                     onInputChange={(e, newInputVal) => refHandle(newInputVal)}
                                     id="combo-box-demo"
                                     options={referensi}
-                                    sx={{ width: 99.9/100 }}
+                                    sx={{ width: 99.9 / 100 }}
                                     renderInput={(params) => <TextField {...params} label="Referensi" />}
 
                                 />
@@ -238,7 +238,7 @@ export default function InsertData() {
                                     label="Keterangan"
                                     multiline
                                     maxRows={5}
-                                    sx={{ width: 99.9/100 }}
+                                    sx={{ width: 99.9 / 100 }}
                                     value={ketValue}
                                     onChange={e => setKetValue(e.target.value)}
                                 />
@@ -271,14 +271,14 @@ export default function InsertData() {
                                     </FormControl>
                                 }
 
-                                
+
 
                             </div>
                             <Button key="submit" type="submit" variant="contained">
-                                    <div className="ml-5 mr-5">
-                                        Submit
-                                    </div>
-                                </Button>
+                                <div className="ml-5 mr-5">
+                                    Submit
+                                </div>
+                            </Button>
 
                         </div>
 

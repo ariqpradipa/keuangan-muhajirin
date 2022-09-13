@@ -1,15 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import Sidebar from "../components/Menus/sidebar";
+import CookieChecker from "../auth/cookieChecker";
 
 const PageLogin = () => {
 
+
   return (
-    <div className="">
-      
-      <Sidebar />
-      
-    </div>
+    <>
+      <CookieChecker />
+      <div className="">
+
+        <Sidebar />
+
+      </div>
+    </>
   );
 };
 

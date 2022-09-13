@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 const Swal = require('sweetalert2')
 
-var sha256 = require('js-sha256').sha256;
+var Cookie = require('js-cookie');
 var axios = require('axios');
 
 const Login = () => {
@@ -10,8 +10,6 @@ const Login = () => {
     const nav = useNavigate();
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-
-    var scramble = "MasjidAl-Muhajirin";
 
     const onSubmitForm = async (e) => {
         e.preventDefault(); //prevent refresh
@@ -30,12 +28,14 @@ const Login = () => {
             axios
                 .post("http://localhost:4000/login", {
                     username: username,
+                    password: password
                 })
                 .then(function (response) {
 
-                    var hexPassword = sha256(scramble + password + scramble);
+                    if (response.data !== 4401) {
 
-                    if (response.data.username === username && response.data.password === hexPassword) {
+                        Cookie.set('_SSIDmuhajirin', response.data);
+                        Cookie.set('_userMuhajirin', username);
 
                         Swal.fire({
                             position: 'center',
