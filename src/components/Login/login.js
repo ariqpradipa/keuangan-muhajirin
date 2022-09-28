@@ -47,17 +47,14 @@ const Login = () => {
                         nav("/home");
                         return;
 
-                    } else {
-
-                        Swal.fire({
-                            position: 'top',
-                            icon: 'error',
-                            title: 'Username atau Password Salah',
-                            showConfirmButton: false,
-                            timer: 1500
-                        })
-
-                    }
+                    } 
+                    Swal.fire({
+                        position: 'top',
+                        icon: 'error',
+                        title: 'Username atau Password Salah',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
                 })
                 .catch(function (error) {
                     console.error(error);

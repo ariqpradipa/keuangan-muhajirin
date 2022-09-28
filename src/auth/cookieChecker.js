@@ -73,7 +73,7 @@ export default function CookieChecker() {
                     showConfirmButton: false,
                     timer: 1000
                 });
-                window.location.href = "/";
+                nav("/");
             });
     }
 }
