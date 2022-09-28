@@ -144,30 +144,74 @@ export default function MiniDrawer() {
                     </DrawerHeader>
                     <Divider />
                     <List>
-                        {['Home', 'Input'].map((text, index) => (
-                            <ListItem key={text} disablePadding sx={{ display: 'block' }}>
-                                <ListItemButton
+                        <ListItem disablePadding sx={{ display: 'block' }}>
+                            <ListItemButton
+                                sx={{
+                                    minHeight: 48,
+                                    justifyContent: open ? 'initial' : 'center',
+                                    px: 2.5,
+                                }}
+                                onClick={() => setHomeState(true)}
+                            >
+                                <ListItemIcon
                                     sx={{
-                                        minHeight: 48,
-                                        justifyContent: open ? 'initial' : 'center',
-                                        px: 2.5,
+                                        minWidth: 0,
+                                        mr: open ? 3 : 'auto',
+                                        justifyContent: 'center',
                                     }}
                                 >
-                                    <ListItemIcon
-                                        sx={{
-                                            minWidth: 0,
-                                            mr: open ? 3 : 'auto',
-                                            justifyContent: 'center',
-                                        }}
-                                    >
-                                        {index % 2 === 0 ? <HomeIcon onClick={() => setHomeState(true)} /> : <InboxIcon onClick={() => setHomeState(false)} />}
-                                    </ListItemIcon>
-                                    <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
-                                </ListItemButton>
-                            </ListItem>
-                        ))}
+                                    <HomeIcon onClick={() => setHomeState(true)} />
+
+                                </ListItemIcon>
+                                <ListItemText primary="Home" sx={{ opacity: open ? 1 : 0 }} />
+                            </ListItemButton>
+                        </ListItem>
+                    </List>
+                    <List>
+                        <ListItem disablePadding sx={{ display: 'block' }}>
+                            <ListItemButton
+                                sx={{
+                                    minHeight: 48,
+                                    justifyContent: open ? 'initial' : 'center',
+                                    px: 2.5,
+                                }}
+                            >
+                                <ListItemIcon
+                                    sx={{
+                                        minWidth: 0,
+                                        mr: open ? 3 : 'auto',
+                                        justifyContent: 'center',
+                                    }}
+                                >
+                                    <InboxIcon onClick={() => setHomeState(false)} />
+                                </ListItemIcon>
+                                <ListItemText primary="Input" sx={{ opacity: open ? 1 : 0 }} />
+                            </ListItemButton>
+                        </ListItem>
                     </List>
                     <Divider />
+                    <List>
+                        <ListItem disablePadding sx={{ display: 'block' }}>
+                            <ListItemButton
+                                sx={{
+                                    minHeight: 48,
+                                    justifyContent: open ? 'initial' : 'center',
+                                    px: 2.5,
+                                }}
+                            >
+                                <ListItemIcon
+                                    sx={{
+                                        minWidth: 0,
+                                        mr: open ? 3 : 'auto',
+                                        justifyContent: 'center',
+                                    }}
+                                >
+                                    <HomeIcon onClick={() => setHomeState(true)} />
+                                </ListItemIcon>
+                                <ListItemText primary="Logout" sx={{ opacity: open ? 1 : 0 }} />
+                            </ListItemButton>
+                        </ListItem>
+                    </List>
                 </Drawer>
                 <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
                     <DrawerHeader />
@@ -176,6 +220,6 @@ export default function MiniDrawer() {
                     </div>
                 </Box>
             </Box>
-        </div>
+        </div >
     );
 }
