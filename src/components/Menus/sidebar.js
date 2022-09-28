@@ -8,22 +8,28 @@ import List from '@mui/material/List';
 import CssBaseline from '@mui/material/CssBaseline';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
-import SvgIcon from '@mui/material/SvgIcon';
 
 import { useNavigate } from "react-router-dom";
 
 import Tabs from "./tabs";
 import InsertData from '../InsertData/insertData';
+
+// Icons
+import SvgIcon from '@mui/material/SvgIcon';
+import LogoutIcon from '@mui/icons-material/Logout';
+import InboxIcon from '@mui/icons-material/MoveToInbox';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import IconButton from '@mui/material/IconButton';
+import MenuIcon from '@mui/icons-material/Menu';
+import MailIcon from '@mui/icons-material/Mail';
+
+var Cookie = require('js-cookie');
+const Swal = require('sweetalert2');
 
 const drawerWidth = 240;
 
@@ -100,7 +106,31 @@ function HomeIcon(props) {
     );
 }
 
+function setLogout() {
+
+    Swal.fire({
+        title: 'Yakin ingin keluar?',
+        showDenyButton: true,
+        confirmButtonText: 'Ya',
+        denyButtonText: `Tidak`,
+    }).then((result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+            Cookie.remove('_SSIDmuhajirin');
+            Cookie.remove('_userMuhajirin');
+
+            window.location.href = "/";
+
+        } else if (result.isDenied) {
+            
+        }
+    })
+
+
+}
+
 export default function MiniDrawer() {
+
     const theme = useTheme();
     const [open, setOpen] = React.useState(false);
     const [homeState, setHomeState] = React.useState(true);
@@ -175,6 +205,7 @@ export default function MiniDrawer() {
                                     justifyContent: open ? 'initial' : 'center',
                                     px: 2.5,
                                 }}
+                                onClick={() => setHomeState(false)}
                             >
                                 <ListItemIcon
                                     sx={{
@@ -206,7 +237,7 @@ export default function MiniDrawer() {
                                         justifyContent: 'center',
                                     }}
                                 >
-                                    <HomeIcon onClick={() => setHomeState(true)} />
+                                    <LogoutIcon onClick={() => setLogout()} />
                                 </ListItemIcon>
                                 <ListItemText primary="Logout" sx={{ opacity: open ? 1 : 0 }} />
                             </ListItemButton>

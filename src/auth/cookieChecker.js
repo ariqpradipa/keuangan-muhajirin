@@ -1,7 +1,8 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Cookies from "js-cookie";
 import axios from "axios";
+
+var Cookie = require('js-cookie');
 
 const Swal = require('sweetalert2');
 
@@ -14,10 +15,10 @@ export default function CookieChecker() {
 
     useEffect(() => {
 
-        if (Cookies.get(tokenName) === undefined || Cookies.get(username) === undefined) {
+        if (Cookie.get(tokenName) === undefined || Cookie.get(username) === undefined) {
 
-            Cookies.remove(tokenName);
-            Cookies.remove(username);
+            Cookie.remove(tokenName);
+            Cookie.remove(username);
 
             nav("/")
 
@@ -27,14 +28,14 @@ export default function CookieChecker() {
 
         }
 
-    }, [Cookies.get(tokenName), Cookies.get(username)]);
+    }, [Cookie.get(tokenName), Cookie.get(username)]);
 
     const getValidToken = () => {
 
         axios
             .post("http://localhost:4000/validateToken", {
-                username: Cookies.get(username),
-                token: Cookies.get(tokenName)
+                username: Cookie.get(username),
+                token: Cookie.get(tokenName)
             })
             .then((response) => {
 
@@ -53,16 +54,16 @@ export default function CookieChecker() {
                     })
                         .then((result) => {
 
-                            Cookies.remove(tokenName);
-                            Cookies.remove(username);
+                            Cookie.remove(tokenName);
+                            Cookie.remove(username);
 
                             nav("/")
 
                         })
 
                 }
-                Cookies.remove(tokenName);
-                Cookies.remove(username);
+                Cookie.remove(tokenName);
+                Cookie.remove(username);
             })
             .catch((error) => {
                 console.log(error);
