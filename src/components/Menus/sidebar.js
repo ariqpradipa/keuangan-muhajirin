@@ -122,7 +122,7 @@ function setLogout() {
             window.location.href = "/";
 
         } else if (result.isDenied) {
-            
+
         }
     })
 

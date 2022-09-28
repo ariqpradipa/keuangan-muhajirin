@@ -392,60 +392,83 @@ export default function EnhancedTable() {
         let idss = [];
         let totPemasukan = 0;
         let totPengeluaran = 0;
+
+        let highestDate = new Date(hasilData[0].tanggal);;
+
+        for(let i = 0; i < hasilData.length; i++) {
+
+            if(highestDate < new Date(hasilData[i].tanggal)) {
+
+                highestDate = new Date(hasilData[i].tanggal);
+
+            }
+            
+        }
+        var thisPeriod = new Date('01/01/' + (highestDate.getYear() + 1900));
+
         for (let i = 0; i < hasilData.length; i++) {
 
             nomor += 1;
-            console.log(hasilData[i].referensi[0])
+            console.log(hasilData[i].referensi[0]);
+            console.log(new Date(hasilData[i].tanggal).getTime());
 
-            if (hasilData[i].referensi[0] === 'A') {
-                saldo += parseInt(hasilData[i].nominal);
-                totPemasukan += parseInt(hasilData[i].nominal);
-                rowsRaw.push({
 
-                    noId: nomor,
-                    tanggalId: hasilData[i].tanggal,
-                    referensiId: hasilData[i].referensi,
-                    kategoriId: hasilData[i].kategori,
-                    keteranganId: hasilData[i].keterangan,
-                    pemasukanId: hasilData[i].nominal,
-                    pengeluaranId: null,
-                    idData: hasilData[i]._id,
-                    imgData: hasilData[i].gambarBukti
-
-                });
-
-                idss.push(hasilData[i]._id);
-
+            if (new Date(hasilData[i].tanggal) >= thisPeriod) {
+                console.log("true");
             } else {
-                saldo -= parseInt(hasilData[i].nominal);
-                totPengeluaran += parseInt(hasilData[i].nominal)
-
-                rowsRaw.push({
-
-                    noId: nomor,
-                    tanggalId: hasilData[i].tanggal,
-                    referensiId: hasilData[i].referensi,
-                    kategoriId: hasilData[i].kategori,
-                    keteranganId: hasilData[i].keterangan,
-                    pemasukanId: null,
-                    pengeluaranId: hasilData[i].nominal,
-                    idData: hasilData[i]._id,
-                    imgData: hasilData[i].gambarBukti,
-
-                });
-
-
-                idss.push(hasilData[i]._id);
-
+                console.log("false");
             }
 
-            if (hasilData[i].gambarBukti.data !== 404) {
-                //hasImg.push(DescriptionIcon);
-                hasImg.push("ada");
-            } else {
-                hasImg.push(null);
-            }
+            if (new Date(hasilData[i].tanggal) >= thisPeriod) {
+                if (hasilData[i].referensi[0] === 'A') {
+                    saldo += parseInt(hasilData[i].nominal);
+                    totPemasukan += parseInt(hasilData[i].nominal);
+                    rowsRaw.push({
 
+                        noId: nomor,
+                        tanggalId: hasilData[i].tanggal,
+                        referensiId: hasilData[i].referensi,
+                        kategoriId: hasilData[i].kategori,
+                        keteranganId: hasilData[i].keterangan,
+                        pemasukanId: hasilData[i].nominal,
+                        pengeluaranId: null,
+                        idData: hasilData[i]._id,
+                        imgData: hasilData[i].gambarBukti
+
+                    });
+
+                    idss.push(hasilData[i]._id);
+
+                } else {
+                    saldo -= parseInt(hasilData[i].nominal);
+                    totPengeluaran += parseInt(hasilData[i].nominal)
+
+                    rowsRaw.push({
+
+                        noId: nomor,
+                        tanggalId: hasilData[i].tanggal,
+                        referensiId: hasilData[i].referensi,
+                        kategoriId: hasilData[i].kategori,
+                        keteranganId: hasilData[i].keterangan,
+                        pemasukanId: null,
+                        pengeluaranId: hasilData[i].nominal,
+                        idData: hasilData[i]._id,
+                        imgData: hasilData[i].gambarBukti,
+
+                    });
+
+
+                    idss.push(hasilData[i]._id);
+
+                }
+
+                if (hasilData[i].gambarBukti.data !== 404) {
+                    //hasImg.push(DescriptionIcon);
+                    hasImg.push("ada");
+                } else {
+                    hasImg.push(null);
+                }
+            }
         }
 
         setTotalPemasukan(totPemasukan);
