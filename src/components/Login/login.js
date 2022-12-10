@@ -47,7 +47,7 @@ const Login = () => {
                         nav("/home");
                         return;
 
-                    } 
+                    }
                     Swal.fire({
                         position: 'top',
                         icon: 'error',
@@ -57,7 +57,16 @@ const Login = () => {
                     });
                 })
                 .catch(function (error) {
+
                     console.error(error);
+                    Swal.fire({
+                        position: 'top',
+                        icon: 'error',
+                        title: 'Terdapat kesalahan server, coba lagi nanti',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+
                 });
         }
     };

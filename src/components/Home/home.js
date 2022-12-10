@@ -80,8 +80,6 @@ export default function EnhancedTable() {
         setEditOpen(!editOpen);
     };
 
-
-
     function descendingComparator(a, b, orderBy) {
         if (b[orderBy] < a[orderBy]) {
             return -1;
@@ -395,31 +393,35 @@ export default function EnhancedTable() {
 
         let highestDate = new Date(hasilData[0].tanggal);;
 
-        for(let i = 0; i < hasilData.length; i++) {
+        for (let i = 0; i < hasilData.length; i++) {
 
-            if(highestDate < new Date(hasilData[i].tanggal)) {
+            if (highestDate < new Date(hasilData[i].tanggal)) {
 
                 highestDate = new Date(hasilData[i].tanggal);
 
             }
-            
+
         }
-        var thisPeriod = new Date('01/01/' + (highestDate.getYear() + 1900));
+
+        //var thisPeriodStart = new Date('01/01/' + (highestDate.getYear() + 1900));
+        var thisPeriodStart = new Date('01/01/' + (new Date().getYear() + 1900));
+        var thisPeriodEnd = new Date('12/31/' + (new Date().getYear() + 1900));
 
         for (let i = 0; i < hasilData.length; i++) {
 
-            nomor += 1;
             console.log(hasilData[i].referensi[0]);
             console.log(new Date(hasilData[i].tanggal).getTime());
 
 
-            if (new Date(hasilData[i].tanggal) >= thisPeriod) {
+            if (new Date(hasilData[i].tanggal) >= thisPeriodStart && new Date(hasilData[i].tanggal) <= thisPeriodEnd) {
                 console.log("true");
             } else {
                 console.log("false");
             }
 
-            if (new Date(hasilData[i].tanggal) >= thisPeriod) {
+            if (new Date(hasilData[i].tanggal) >= thisPeriodStart && new Date(hasilData[i].tanggal) <= thisPeriodEnd) {
+
+                nomor += 1;
                 if (hasilData[i].referensi[0] === 'A') {
                     saldo += parseInt(hasilData[i].nominal);
                     totPemasukan += parseInt(hasilData[i].nominal);
@@ -470,6 +472,12 @@ export default function EnhancedTable() {
                 }
             }
         }
+
+        document.getElementById('judul-laporan').style.display = 'flex';
+        document.getElementById('tanggal-laporan').style.display = 'flex';
+
+        document.getElementById('judul-laporan').innerHTML = 'Laporan Keuangan Masjid Al-Muhajirin';
+        document.getElementById('tanggal-laporan').innerHTML = 'Tahun ' + (new Date().getYear() + 1900);
 
         setTotalPemasukan(totPemasukan);
         setTotalPengeluaran(totPengeluaran);
@@ -563,12 +571,12 @@ export default function EnhancedTable() {
             let totPengeluaran = 0;
             for (let i = 0; i < hasilData.length; i++) {
 
-                nomor += 1;
                 x = new Date(hasilData[i].tanggal);
 
                 if (x >= y && x <= z) {
                     if (hasilData[i].kategori === kategoriValue.label || kategoriValue.label === 'Semua') {
 
+                        nomor += 1;
                         if (hasilData[i].referensi[0] === 'A') {
                             totPemasukan += parseInt(hasilData[i].nominal);
                             rowsRaw.push({
